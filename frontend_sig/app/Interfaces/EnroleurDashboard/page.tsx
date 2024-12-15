@@ -12,7 +12,7 @@ interface userinfo {
 
 
 
-const Scrutatorpage = () => {
+const Ebroleurpage = () => {
 
   const [candidates] = useState([
     "Candidat A",
@@ -154,7 +154,7 @@ const Scrutatorpage = () => {
             height={40}
             className="rounded-full"
           />
-          <h1 className="text-xl font-bold">Scrutator Dashboard</h1>
+          <h1 className="text-xl font-bold">Enroler Dashboard</h1>
         </div>
         <div className="flex items-center gap-x-4">
         <Image
@@ -221,7 +221,7 @@ const Scrutatorpage = () => {
         {isopendashboard && 
         
         <div className="p-6 w-full mx-auto bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-center">Formulaire des Votes</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Formulaire des Enroleurs</h2>
 
       <form onClick={handleSubmitvote} className="space-y-4">
         {/* Liste déroulante pour les candidats */}
@@ -280,4 +280,4 @@ const Scrutatorpage = () => {
   );
 };
 
-export default Scrutatorpage;
+export default Ebroleurpage;

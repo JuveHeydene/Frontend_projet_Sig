@@ -21,6 +21,16 @@ interface createuser {
          bureau :string,
 }
 
+interface Circonscription{
+  nom:string,
+  circonscriptionname:string
+}
+
+interface BureauVote{
+  nom:string,
+  circonscriptionname:string
+}
+
 
 const AdminPage=()=>{
 
@@ -40,12 +50,23 @@ const AdminPage=()=>{
                 bureau: "",
               });
 
+              const [formcirconsription ,setcirconsription]= useState <Circonscription>({
+                nom:"",
+                circonscriptionname:"",
+              })
+
+              const [formBureauvote ,setBureauvote]= useState <BureauVote>({
+                nom:"",
+                circonscriptionname:"",
+              })
 
 
         const [isopenregion,setIsopenregion]=useState(true);
         const [isopencreateuser,setIsopencreateuser]=useState(false);
         const [isopenallusers,setIsopenallusers]=useState(false);
         const [isModalOpen, setIsModalOpen] = useState(false);
+        const [iscreatecenter, setIscreatecenter] = useState(false);
+        const [isbureaudevote, setIsbureaudevote] = useState(false);
 
         const [role, setRole] = useState("");
 
@@ -58,14 +79,27 @@ const AdminPage=()=>{
           { id: "HomePage", icon: "/Images/icons8_home_99px 1.png", label: "Home Page" },
           { id: "AllUsers", icon: "/Images/icons8_staff_99px_1 1.png", label: "All Users" },
           { id: "CreateUsers", icon: "/Images/icons8_add_administrator_99px 1.png", label: "Create Users" },
-          { id: "VotingCenter", icon: "/Images/icons8_location_99px_1 1.png", label: "Voting Center" },
-          { id: "Favorite", icon: "/Images/icons8_rating_99px 1.png", label: "Favorite" },
+          { id: "VotingCenter", icon: "/Images/icons8_location_99px_1 1.png", label: "Create Center" },
+          { id: "Favorite", icon: "/Images/icons8_rating_99px 1.png", label: "Create VoteOffice" },
           { id: "Settings", icon: "/Images/icons8_settings_99px 1.png", label: "Settings" },
           { id: "AdvancedParameters", icon: "/Images/icons8_menu_99px 1.png", label: "ADVANCE PARAMETERS" },
           { id: "AboutElection", icon: "/Images/Info Popup.png", label: "About Election" },
           { id: "LightDarkMode", icon: "/Images/Sun.png", label: "Light/Dark Mode" },
           { id: "Logout", icon: "/Images/Logout Rounded.png", label: "Log Out" },
         ];
+
+
+
+        const [circonscriptions, setCirconscriptions] = useState<string[]>([
+          "Circonscription A",
+          "Circonscription B",
+          "Circonscription C",
+          "Circonscription D",
+          "Circonscription E",
+          "Circonscription F",
+        ]);
+
+
           // Initial state with an array of users
   const [users, setUsers] = useState<userinfo[]>([
         { id: 1, name: "Juve", role: "Admin" },
@@ -130,13 +164,31 @@ const AdminPage=()=>{
             [name]: value,
           });
       };
+
+      const handleInputcirconscription = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+        setcirconsription({
+            ...formcirconsription,
+            [name]: value,
+          });
+      };
+
+      const handleInputbureaudevote = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+        setBureauvote({
+            ...formBureauvote,
+            [name]: value,
+          });
+      };
     
 
 
 
 
       //create user submit
-      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      const handleSubmitcreateuser = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
                 const response = await fetch('http://localhost:3000/user/create', {
@@ -155,6 +207,62 @@ const AdminPage=()=>{
                 }
               } catch (error) {
                 console.error('Error creating user:', error);
+              }
+
+
+              }
+
+
+
+
+
+              //create center
+      const handleSubmitcreatecenter = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+                const response = await fetch('http://localhost:3000/center/create', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  Accept: "application/json",
+                  "Access-Control-Allow-Origin": "*",
+                  },
+                  body: JSON.stringify(formcirconsription),
+                });
+                if (response.ok) {
+                  alert('center created successfully!');
+                } else {
+                  console.error('Error creating center:', response.statusText);
+                }
+              } catch (error) {
+                console.error('Error creating center:', error);
+              }
+
+
+              }
+
+
+
+                //create Bureau de Vote
+      const handleSubmitcreatebureauvote = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+                const response = await fetch('http://localhost:3000/bureau/create', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  Accept: "application/json",
+                  "Access-Control-Allow-Origin": "*",
+                  },
+                  body: JSON.stringify(formcirconsription),
+                });
+                if (response.ok) {
+                  alert('bureau created successfully!');
+                } else {
+                  console.error('Error creating bureau:', response.statusText);
+                }
+              } catch (error) {
+                console.error('Error creating bureau:', error);
               }
 
 
@@ -238,6 +346,18 @@ const AdminPage=()=>{
                   
                  
                   break;
+
+                case "VotingCenter":
+                    handleIscreatecenters();
+              
+              console.log("Opening the voting center form...");
+              break;
+
+              case "Favorite":
+                    handleIscreatebureuvote();
+              
+              console.log("Opening the bureu de vote form...");
+              break;
           
                 default:
                   console.log(`${id} clicked, but no specific action defined.`);
@@ -253,6 +373,8 @@ const AdminPage=()=>{
                         setIsopenregion(true);
                         setIsopencreateuser(false);
                         setIsopenallusers(false);
+                        setIscreatecenter(false);
+                        setIsbureaudevote(false);
                 }
               }
 
@@ -262,11 +384,34 @@ const AdminPage=()=>{
                         setIsopencreateuser(true);
                         setIsopenregion(false);
                         setIsopenallusers(false);
+                        setIscreatecenter(false);
+                        setIsbureaudevote(false);
                 }
               }
         const handleIsopenallusers=()=>{
                 if (isopenallusers===false){
                         setIsopenallusers(true);
+                        setIsopencreateuser(false);
+                        setIsopenregion(false);
+                        setIscreatecenter(false);
+                        setIsbureaudevote(false);
+                }
+              }
+
+        const handleIscreatecenters=()=>{
+                if (iscreatecenter===false){
+                        setIscreatecenter(true)
+                        setIsopenallusers(false);
+                        setIsopencreateuser(false);
+                        setIsopenregion(false);
+                        setIsbureaudevote(false);
+                }
+              }
+              const handleIscreatebureuvote=()=>{
+                if (isbureaudevote===false){
+                        setIsbureaudevote(true);
+                        setIscreatecenter(false)
+                        setIsopenallusers(false);
                         setIsopencreateuser(false);
                         setIsopenregion(false);
                 }
@@ -292,6 +437,33 @@ const AdminPage=()=>{
             
                     const data: userinfo[] = await response.json();
                     setUsers(data);
+                  } catch (error) {
+                    console.error('Error fetching data:', error);
+                  }
+                }
+            
+                fetchData();
+              }, []); */}
+
+
+               {/*useEffect(() => { 
+                async function fetchData() {
+                  try {
+                    const response = await fetch('http://localhost:3000/circonscription/getall', {
+                      method: 'GET',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                      },
+                    });
+            
+                    if (!response.ok) {
+                      throw new Error('Network response was not ok ' + response.statusText);
+                    }
+            
+                    const data: Circonscription[] = await response.json();
+                    setcirconsription(data);
                   } catch (error) {
                     console.error('Error fetching data:', error);
                   }
@@ -445,7 +617,7 @@ const AdminPage=()=>{
                     {isopencreateuser && 
 
                     <div className="w-full"> 
-                        <form onSubmit={handleSubmit} className="p-6 bg-gray-100 w-full  rounded">
+                        <form onSubmit={handleSubmitcreateuser} className="p-6 bg-gray-100 w-full  rounded">
       <h1 className="text-xl font-bold mb-4">Formulaire</h1>
 
       {/* Noms */}
@@ -673,6 +845,126 @@ const AdminPage=()=>{
 
       </div>
     </div>}
+
+
+    {/* FORMULAIRE POUR CREE UN CENTRE DE VOTE  */}
+
+    {iscreatecenter && 
+    
+    <div className="w-full mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-4 text-center">Ajouter un Centre de vote </h1>
+      <form onSubmit={handleSubmitcreatecenter}>
+        {/* Champ Nom */}
+        <div className="mb-4">
+          <label htmlFor="nom" className="block text-gray-700 font-medium mb-2">
+            Nom
+          </label>
+          <input 
+            type="text"
+            id="nom"
+            name="nom"
+            value={formcirconsription.nom}
+            onChange={handleInputcirconscription}
+            placeholder="Entrez le nom"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+        </div>
+
+        {/* Liste déroulante pour Circonscription */}
+        <div className="mb-4">
+          <label
+            htmlFor="circonscriptionname"
+            className="block text-gray-700 font-medium mb-2"
+          >
+            Circonscription
+          </label>
+          <select
+            id="circonscriptionname"
+            name="circonscriptionname"
+            value={formcirconsription.circonscriptionname}
+            onChange={handleInputcirconscription}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          >
+            <option value="">Sélectionnez une circonscription</option>
+            {circonscriptions.map((circ, index) => (
+              <option key={index} value={circ}>
+                {circ}
+              </option>
+            ))}
+          </select>
+        </div>
+
+       
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        >
+          Soumettre
+        </button>
+      </form>
+    </div>
+    
+    }
+
+
+    {/* FORMULAIRE POUR CREE UN BUREAU  DE VOTE  */}
+
+    {isbureaudevote && 
+    
+    <div className="w-full mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-4 text-center">Ajouter un Bureau de vote </h1>
+      <form onSubmit={handleSubmitcreatebureauvote}>
+        {/* Champ Nom */}
+        <div className="mb-4">
+          <label htmlFor="nom" className="block text-gray-700 font-medium mb-2">
+            Nom
+          </label>
+          <input 
+            type="text"
+            id="nom"
+            name="nom"
+            value={formBureauvote.nom}
+            onChange={handleInputbureaudevote}
+            placeholder="Entrez le nom"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+        </div>
+
+        {/* Liste déroulante pour Circonscription */}
+        <div className="mb-4">
+          <label
+            htmlFor="circonscriptionname"
+            className="block text-gray-700 font-medium mb-2"
+          >
+            Circonscription
+          </label>
+          <select
+            id="circonscriptionname"
+            name="circonscriptionname"
+            value={formBureauvote.circonscriptionname}
+            onChange={handleInputbureaudevote}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          >
+            <option value="">Sélectionnez une circonscription</option>
+            {circonscriptions.map((circ, index) => (
+              <option key={index} value={circ}>
+                {circ}
+              </option>
+            ))}
+          </select>
+        </div>
+
+       
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        >
+          Soumettre
+        </button>
+      </form>
+    </div>
+    
+    }
 
 
 
