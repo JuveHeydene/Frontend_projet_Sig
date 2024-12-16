@@ -3,7 +3,7 @@
 import react from "react"
 import { useState,useEffect } from "react"
 import Image from "next/image"
-
+import { useRouter } from 'next/navigation';
 
 interface userinfo {
         id: number;
@@ -33,7 +33,7 @@ interface BureauVote{
 
 
 const AdminPage=()=>{
-
+  const router = useRouter();
 
         const [formData ,setFormData]= useState <userinfo>({
                 id:0,
@@ -213,6 +213,10 @@ const AdminPage=()=>{
               }
 
 
+              //redirectioon to home page
+              const handlehomepageredireect=()=>{
+                router.push('/Interfaces/HomePage');
+              }
 
 
 
@@ -358,6 +362,12 @@ const AdminPage=()=>{
               
               console.log("Opening the bureu de vote form...");
               break;
+
+              case "HomePage":
+                handlehomepageredireect();
+          
+                    console.log("Opening the bureu de vote form...");
+                    break;
           
                 default:
                   console.log(`${id} clicked, but no specific action defined.`);
