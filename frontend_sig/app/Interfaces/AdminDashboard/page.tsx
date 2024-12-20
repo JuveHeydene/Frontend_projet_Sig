@@ -86,6 +86,20 @@ const AdminPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   //Fin
+  //Debut Boutton pour afficher ou cacher la sidebar
+  const toggleBtnRef = useRef<HTMLAnchorElement | null>(null);
+  const toggleSidebar = (event:React.MouseEvent)=>{
+    if (sidebarRef.current) {
+      sidebarRef.current.classList.toggle('close')
+      toggleBtnRef.current?.classList.toggle('rotate')
+    }
+    const showElements = Array.from(sidebarRef.current?.getElementsByClassName('show') || []);
+    showElements.forEach(ul=>{
+      ul.classList.remove('show')
+      ul.previousElementSibling?.classList.remove('rotate')
+    })
+  }
+  //Fin
 
   const [formBureauvote, setBureauvote] = useState<BureauVote>({
     nom: "",
@@ -104,87 +118,119 @@ const AdminPage = () => {
   const [activeItem, setActiveItem] = useState("Dashboard"); // Track active menu item
   const [isCollapsed, setIsCollapsed] = useState(false); // Track sidebar state
 
+  // const menuItems = [
+  //   {
+  //     id: "Menu",
+  //     icon: "/Images/icons8_menu_99px 1.png",
+  //     label: "",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "Dashboard",
+  //     icon: "/Images/icons8_dashboard_layout_99px 1.png",
+  //     label: "Dashboard",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "HomePage",
+  //     icon: "/Images/icons8_home_99px 1.png",
+  //     label: "Home Page",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "AllUsers",
+  //     icon: "/Images/icons8_staff_99px_1 1.png",
+  //     label: "All Users",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "Create",
+  //     icon: "/Images/icons8_staff_99px_1 1.png",
+  //     label: "Create",
+  //     children: [
+  //       {
+  //         id: "CreateUsers",
+  //         icon: "/Images/icons8_add_administrator_99px 1.png",
+  //         label: "Create Users",
+  //         children: null,
+  //       },
+  //       {
+  //         id: "VotingCenter",
+  //         icon: "/Images/icons8_location_99px_1 1.png",
+  //         label: "Create Center",
+  //         children: null,
+  //       },
+  //       {
+  //         id: "Favorite",
+  //         icon: "/Images/icons8_rating_99px 1.png",
+  //         label: "Create VoteOffice",
+  //         children: null,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: "Settings",
+  //     icon: "/Images/icons8_settings_99px 1.png",
+  //     label: "Settings",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "AdvancedParameters",
+  //     icon: "/Images/icons8_menu_99px 1.png",
+  //     label: "ADVANCE PARAMETERS",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "AboutElection",
+  //     icon: "/Images/Info Popup.png",
+  //     label: "About Election",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "LightDarkMode",
+  //     icon: "/Images/Sun.png",
+  //     label: "Light/Dark Mode",
+  //     children: null,
+  //   },
+  //   {
+  //     id: "Logout",
+  //     icon: "/Images/Logout Rounded.png",
+  //     label: "Log Out",
+  //     children: null,
+  //   },
+  // ];
   const menuItems = [
-    {
-      id: "Menu",
-      icon: "/Images/icons8_menu_99px 1.png",
-      label: "",
-      children: null,
-    },
-    {
-      id: "Dashboard",
-      icon: "/Images/icons8_dashboard_layout_99px 1.png",
-      label: "Dashboard",
-      children: null,
-    },
-    {
-      id: "HomePage",
-      icon: "/Images/icons8_home_99px 1.png",
-      label: "Home Page",
-      children: null,
-    },
-    {
-      id: "AllUsers",
-      icon: "/Images/icons8_staff_99px_1 1.png",
-      label: "All Users",
-      children: null,
-    },
-    {
-      id: "Create",
-      icon: "/Images/icons8_staff_99px_1 1.png",
-      label: "Create",
-      children: [
-        {
-          id: "CreateUsers",
-          icon: "/Images/icons8_add_administrator_99px 1.png",
-          label: "Create Users",
-          children: null,
-        },
-        {
-          id: "VotingCenter",
-          icon: "/Images/icons8_location_99px_1 1.png",
-          label: "Create Center",
-          children: null,
-        },
-        {
-          id: "Favorite",
-          icon: "/Images/icons8_rating_99px 1.png",
-          label: "Create VoteOffice",
-          children: null,
-        },
-      ],
-    },
-    {
-      id: "Settings",
-      icon: "/Images/icons8_settings_99px 1.png",
-      label: "Settings",
-      children: null,
-    },
-    {
-      id: "AdvancedParameters",
-      icon: "/Images/icons8_menu_99px 1.png",
-      label: "ADVANCE PARAMETERS",
-      children: null,
-    },
-    {
-      id: "AboutElection",
-      icon: "/Images/Info Popup.png",
-      label: "About Election",
-      children: null,
-    },
-    {
-      id: "LightDarkMode",
-      icon: "/Images/Sun.png",
-      label: "Light/Dark Mode",
-      children: null,
-    },
-    {
-      id: "Logout",
-      icon: "/Images/Logout Rounded.png",
-      label: "Log Out",
-      children: null,
-    },
+    { id: "Menu", icon: "double_arrow", label: null, children: null },
+    { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null },
+    { id: "HomePage", icon: "home", label: "Home Page", children: null },
+    { id: "AllUsers", icon: "people", label: "All Users", children: null },
+    { id: "Create", icon: "add", label: "Create", children:[
+      {
+        id: "CreateUsers",
+        icon: "person_add",
+        label: "Create Users",
+        children: null,
+      },
+      {
+        id: "VotingCenter",
+        icon: "apartment",
+        label: "Create Center",
+        children: null,
+      },
+      {
+        id: "Favorite",
+        icon: "how_to_vote",
+        label: "Create VoteOffice",
+        children: null,
+      },
+    ] },
+    { id: "Settings", icon: "settings", label: "Settings", children: null },
+    { id: "AdvancedParameters", icon: "tune", label: "ADVANCE PARAMETERS", children: null },
+    { id: "AboutElection", icon: "info", label: "About Election", children: null },
+    { id: "LightDarkMode", icon: "light_mode", label: "Light/Dark Mode", children: null },
+    { id: "Logout", icon: "logout", label: "Log Out", children: null },
   ];
+  
 
   const [circonscriptions, setCirconscriptions] = useState<string[]>([
     "Circonscription A",
@@ -512,12 +558,18 @@ const AdminPage = () => {
   function toggleSubMenu(button:any): void {
     button.nextElementSibling?.classList.toggle('show')
     button.classList.toggle('rotate')
+
+    if (sidebarRef.current?.classList.contains('close')) {
+      sidebarRef.current.classList.toggle('close')
+      toggleBtnRef.current?.classList.toggle('rotate')
+    }
   }
 
   return (
     <div className="admin-dashboard">
       {/* Start :Navbar */}
       <nav>
+      
         <span className=""> 
           <Image src={myLogo} alt={""} className="logo" ></Image>
         </span>
@@ -552,14 +604,9 @@ const AdminPage = () => {
               {item.children ? (
                 <>
                   <button onClick={(e)=>toggleSubMenu(e.currentTarget as HTMLButtonElement)} className="dropdown-btn">
-                    <Image
-                      src={item.icon}
-                      alt={`${item.label} Icon`}
-                      width={20}
-                      height={20}
-                      color="#1a4162"
-                    />
+                    <i className="material-icons">{item.icon}</i>
                     <span>{item.label}</span>
+                    <i className="material-icons">arrow_drop_down</i>
                   </button>
                   <ul className="sub-menu">
                     <div>
@@ -567,17 +614,12 @@ const AdminPage = () => {
                       
                         <li
                         key={child.id}
-                        data-id = {child.id}
+                        
                         onClick={() => handleMenuClick(child.id)}
                         className="active"
                         >
                         <a href="#">
-                          <Image
-                            src={child.icon}
-                            alt={`${child.label} Icon`}
-                            width={20}
-                            height={20}
-                          />
+                          <i className="material-icons">{child.icon}</i>
                           <span>{child.label}</span>
                           </a>
                         </li>
@@ -588,15 +630,18 @@ const AdminPage = () => {
                   </ul>
                 </>
               ) : (
-                <a href="#">
-                  <Image
-                    src={item.icon}
-                    alt={`${item.label} Icon`}
-                    width={20}
-                    height={20}
-                  />
-                  <span>{item.label}</span>
-                </a>
+                item.id === "Menu"?(
+                  <a href="#" id={item.id} ref={toggleBtnRef} onClick={(e)=>toggleSidebar(e)}>
+                    <i className="material-icons" >{item.icon}</i>
+                    
+                  </a>
+                ):(
+                  <a href="#" id={item.id}>
+                    <i className="material-icons" >{item.icon}</i>
+                    <span>{item.label}</span>
+                  </a>
+                )
+                
               )}
             </li>
           ))}

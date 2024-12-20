@@ -1,6 +1,6 @@
 .admin-dashboard {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: auto 1fr;
   grid-template-rows: 100px 1fr auto;
   grid-template-areas:
     "navbar navbar"
@@ -103,15 +103,19 @@
   aside {
     position: sticky;
     top: 100px;
+   
     height: calc(100vh - 100px);
     grid-area: sidebar;
     box-sizing: border-box;
     padding: 5px 1em;
     border-right: 1px solid #1a4162;
     overflow-y: auto;
+    text-wrap: nowrap;
+    transition: max-width 300ms ease-in-out;
     
-    // scrollbar-width: none;
-
+    max-width: 300px;
+    scrollbar-width: none;
+    
     ul {
       list-style: none;
     }
@@ -155,10 +159,10 @@
     .sub-menu.show {
       grid-template-rows: 1fr;
     }
-    .dropdown-btn svg {
+    .dropdown-btn i {
       transition: 200ms ease;
     }
-    .rotate svg:last-child {
+    .rotate i:last-child {
       rotate: 180deg;
     }
     .sub-menu a {
@@ -172,13 +176,19 @@
       background: none;
       cursor: pointer;
 
-      svg {
+      i {
         transition: rotate 150ms ease;
       }
       &:hover {
-        background-color: #275781;
+        background: #275781;
       }
     }
+  }
+  aside.close{
+    padding: 5px;
+    max-width: 60px;
+    transition: 300ms ease-in-out;
+    
   }
   aside::-webkit-scrollbar {
     width: 10px; /* Largeur de la scrollbar */
@@ -195,7 +205,7 @@
   }
 
   aside::-webkit-scrollbar-thumb:hover {
-    background-color: #45a049; /* Couleur de la thumb au survol */
+    background-color: #6592b9; /* Couleur de la thumb au survol */
   }
   aside > ul > li:first-child {
     display: flex;
