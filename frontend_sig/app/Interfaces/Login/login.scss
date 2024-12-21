@@ -30,30 +30,30 @@
             
         }
         }
-        @media (max-width: 800px) { // Ecran de moins de 801 px
-            .grid-container {
-                max-height: 100vh;
-                display: grid;
-                border: none;
-                grid-template-columns: 1fr;
-                grid-template-rows: 220px 1fr;
-            }
-            .logo{
-                
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-            }
-            .logo img {
-                height: Auto;
-                width: 90%;
-            }
-        
-            .logo h1 {
-                display: none;
-            }
+    @media (max-width: 800px) { // Ecran de moins de 801 px
+        .grid-container {
+            max-height: 100vh;
+            display: grid;
+            border: none;
+            grid-template-columns: 1fr;
+            grid-template-rows: 220px 1fr;
         }
+        .logo{
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .logo img {
+            height: Auto;
+            width: 90%;
+        }
+    
+        .logo h1 {
+            display: none;
+        }
+    }
     /*Fin*/
 
     //Debut Style de la section du formulaire
@@ -137,12 +137,14 @@
                 border-radius: 10px;
                 border-style: none;
                 bottom: 12%;
+                transition: 300ms ease-in-out;
             }
 
             .connexion:hover {
                 background-color: #215380;
                 transform: scale(1.02, 1.02);
                 cursor: pointer;
+                transition: 300ms ease-in-out;
             }
             //Fin
 

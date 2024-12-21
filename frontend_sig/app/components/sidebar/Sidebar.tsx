@@ -4,10 +4,245 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import "./Sidebar.scss";
+interface SidebarProps {
+  role: string; // Déclare le rôle comme une chaîne
+  
+}
+interface MenuItem {
+  id: string;
+  icon: string;
+  label: string|null;
+  children: Array<MenuItem>|null;
+  url: string;
+}
 
-const Sidebar = (role:any) => {
+const Sidebar : React.FC<SidebarProps>= ({role}) => {
   const sidebarRef = useRef<HTMLElement>(null);
   const toggleBtnRef = useRef<HTMLAnchorElement | null>(null);
+  const [menuItems, setMenuItems] = useState<Array<MenuItem>>([]);
+  useEffect(() => {
+    let items: Array<MenuItem> = [];
+    console.log("Role:", role);
+
+    const getMenusItems = ()=>{
+      switch (role) {
+      case "ADMINISTRATEUR":
+        return [
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "users", icon: "group", label: "Users", children:[
+            {
+              id: "CreateUsers",
+              icon: "person_add",
+              label: "Create Users",
+              children: null,
+              url: ""
+            },
+            {
+              id: "user-list",
+              icon: "people",
+              label: "Registered people",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "voting-centers", icon: "apartment", label: "Voting centers", children:[
+            {
+              id: "center-list",
+              icon: "list",
+              label: "Voting centers list",
+              children: null,
+              url: ""
+            },
+            {
+              id: "add-voting-centers",
+              icon: "add",
+              label: "New voting center",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "Voting-office", icon: "how_to_vote", label: "Voting office", children:[
+            {
+              id: "voting-office-list",
+              icon: "list",
+              label: "Voting office list",
+              children: null,
+              url: ""
+            },
+            {
+              id: "add-voting-office",
+              icon: "add",
+              label: "Voting office",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "voting-results", icon: "summarize", label: "Voting result", children:[
+            {
+              id: "consult-voting-result",
+              icon: "visibility",
+              label: "Consult results",
+              children: null,
+              url: ""
+            },
+            {
+              id: "insert-result",
+              icon: "edit",
+              label: "Insert a vote result",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+        ];
+      case "ENROLLEUR":
+        return [
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "users", icon: "group", label: "Enrolled electors", children:[
+            {
+              id: "CreateUsers",
+              icon: "person_add",
+              label: "Add electors",
+              children: null,
+              url: ""
+            },
+            {
+              id: "user-list",
+              icon: "people",
+              label: "Registered electors",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+        ];
+      case "SCRUTATEUR":
+        return [
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "voting-results", icon: "summarize", label: "Voting result", children:[
+            {
+              id: "consult-voting-result",
+              icon: "visibility",
+              label: "Consult office results",
+              children: null,
+              url: ""
+            },
+            {
+              id: "insert-result",
+              icon: "edit",
+              label: "Edit office result",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+        ];
+      case "SUPERVISEUR":
+        return [
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "users", icon: "group", label: "Users", children:[
+            {
+              id: "CreateUsers",
+              icon: "person_add",
+              label: "Create Users",
+              children: null,
+              url: ""
+            },
+            {
+              id: "user-list",
+              icon: "people",
+              label: "Registered people",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+        ];
+      default:
+        return [
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "users", icon: "group", label: "Users", children:[
+            {
+              id: "CreateUsers",
+              icon: "person_add",
+              label: "Create Users",
+              children: null,
+              url: ""
+            },
+            {
+              id: "user-list",
+              icon: "people",
+              label: "Registered people",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "voting-centers", icon: "apartment", label: "Voting centers", children:[
+            {
+              id: "center-list",
+              icon: "list",
+              label: "Voting centers list",
+              children: null,
+              url: ""
+            },
+            {
+              id: "add-voting-centers",
+              icon: "add",
+              label: "New voting center",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "Voting-office", icon: "how_to_vote", label: "Voting office", children:[
+            {
+              id: "voting-office-list",
+              icon: "list",
+              label: "Voting office list",
+              children: null,
+              url: ""
+            },
+            {
+              id: "add-voting-office",
+              icon: "add",
+              label: "Voting office",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "voting-results", icon: "summarize", label: "Voting result", children:[
+            {
+              id: "consult-voting-result",
+              icon: "visibility",
+              label: "Consult results",
+              children: null,
+              url: ""
+            },
+            {
+              id: "insert-result",
+              icon: "edit",
+              label: "Insert a vote result",
+              children: null,
+              url: ""
+            }
+          ] , url: ""},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+        ];
+    }
+    }
+    console.log("Items : ", items)
+    setMenuItems(getMenusItems())
+    
+  }, [role]);
   const toggleSidebar = (event:React.MouseEvent)=>{
     if (sidebarRef.current) {
       sidebarRef.current.classList.toggle('close')
@@ -35,37 +270,8 @@ const Sidebar = (role:any) => {
       toggleBtnRef.current?.classList.toggle('rotate')
     }
   }
-  const menuItems = [
-    { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null },
-    { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null },
-    { id: "HomePage", icon: "home", label: "Home Page", children: null },
-    { id: "AllUsers", icon: "people", label: "All Users", children: null },
-    { id: "Create", icon: "add", label: "Create", children:[
-      {
-        id: "CreateUsers",
-        icon: "person_add",
-        label: "Create Users",
-        children: null,
-      },
-      {
-        id: "VotingCenter",
-        icon: "apartment",
-        label: "Create Center",
-        children: null,
-      },
-      {
-        id: "Favorite",
-        icon: "how_to_vote",
-        label: "Create VoteOffice",
-        children: null,
-      },
-    ] },
-    { id: "Settings", icon: "settings", label: "Settings", children: null },
-    { id: "AdvancedParameters", icon: "tune", label: "ADVANCE PARAMETERS", children: null },
-    { id: "AboutElection", icon: "info", label: "About Election", children: null },
-    { id: "LightDarkMode", icon: "light_mode", label: "Light/Dark Mode", children: null },
-    { id: "Logout", icon: "logout", label: "Log Out", children: null },
-  ];
+  console.log("menu items : ", menuItems)
+  
 
   
 
