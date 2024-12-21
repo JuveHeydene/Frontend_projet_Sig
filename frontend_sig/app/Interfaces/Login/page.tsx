@@ -9,14 +9,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface usersignin {
-  username: string;
+  email: string;
   password: string;
 }
 const LoginPage = () => {
   const router = useRouter();
 
   const [formData, setFormData] = useState<usersignin>({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -34,12 +34,12 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       console.log("User to log in info :", formData);
-      const response = await fetch("http://localhost:3001/api/auth/signin", {
+      const response = await fetch("http://localhost:8000/users/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          "Access-Control-Allow-Origin": "*",
+          
         },
         body: JSON.stringify(formData),
       });
@@ -47,15 +47,15 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("here is your response " + data.id);
-        console.log("here is your response " + data.accessToken);
-        console.log("here is your response " + data.roles);
+        console.log("here is your response " + data.access);
+        console.log("here is your response " + data.user.role);
+        
 
-        localStorage.setItem("token", data.accessToken);
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("roles", JSON.stringify(data.roles));
+        localStorage.setItem("token", data.access);
+        localStorage.setItem("email", data.user.email);
+        localStorage.setItem("roles", JSON.stringify(data.user.role));
         alert("User log in  succesfully");
-        router.push("/Interfaces/ReceptionpageAferLogin");
+        router.push("/Interfaces/HomePage");
       } else {
         console.error("Error registring user ", response.statusText);
       }
@@ -77,10 +77,10 @@ const LoginPage = () => {
           <div className="inputs">
             <input
               type="text"
-              name="username"
-              value={formData.username}
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-              placeholder="Username"
+              placeholder="email"
             />
             <input
                 type="password"

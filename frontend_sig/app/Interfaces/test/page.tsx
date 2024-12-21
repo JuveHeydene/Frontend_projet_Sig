@@ -5,7 +5,7 @@ import Layout from '@/app/components/layout/Layout';
 const Test = () => {
   return (
     <>
-      <Layout role = "">
+      <Layout role = "SUPERVISEUR">
        <p>
           Le lorem ipsum est, en imprimerie, une suite de mots sans
           signification utilisée à titre provisoire pour calibrer une mise en

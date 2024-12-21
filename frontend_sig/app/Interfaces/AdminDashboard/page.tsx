@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import myLogo from "../../../public/Images/elections_237.png"
 import "./admindashboard.scss";
 import Link from "next/link";
+import withAuth from '@/app/components/withAuths/page';
 
 interface userinfo {
   id: number;
@@ -1270,4 +1271,5 @@ const AdminPage = () => {
   );
 };
 
-export default AdminPage;
+
+export default withAuth(AdminPage, ['ADMINISTRATEUR']);
