@@ -310,14 +310,12 @@ const Sidebar = () => {
                       
                         <li
                         key={child.id}
-                        
-                        
                         className="active"
                         >
-                        <a href={child.url}>
-                          <i className="material-icons">{child.icon}</i>
-                          <span>{child.label}</span>
-                          </a>
+                        <Link href={child.url}>
+                            <i className="material-icons">{child.icon}</i>
+                            <span>{child.label}</span>
+                        </Link>
                         </li>
                      
                       
