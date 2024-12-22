@@ -4,8 +4,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import "./Sidebar.scss";
+import Link from "next/link";
 interface SidebarProps {
-  role: string; // Déclare le rôle comme une chaîne
+  role: string|null; // Déclare le rôle comme une chaîne
   
 }
 interface MenuItem {
@@ -16,10 +17,21 @@ interface MenuItem {
   url: string;
 }
 
-const Sidebar : React.FC<SidebarProps>= ({role}) => {
+const Sidebar = () => {
   const sidebarRef = useRef<HTMLElement>(null);
   const toggleBtnRef = useRef<HTMLAnchorElement | null>(null);
   const [menuItems, setMenuItems] = useState<Array<MenuItem>>([]);
+   const [role, setRole] = useState<string>("");
+  useEffect(()=>{
+      const role = localStorage.getItem("roles")
+      if (role) {
+        setRole(role)
+      }
+      else{
+        setRole("ADMINISTRATEUR")
+      }
+      
+    },[])
   useEffect(() => {
     let items: Array<MenuItem> = [];
     console.log("Role:", role);
@@ -28,180 +40,180 @@ const Sidebar : React.FC<SidebarProps>= ({role}) => {
       switch (role) {
       case "ADMINISTRATEUR":
         return [
-          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
-          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "#" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "/dashboard" },
           { id: "users", icon: "group", label: "Users", children:[
             {
               id: "CreateUsers",
               icon: "person_add",
               label: "Create Users",
               children: null,
-              url: ""
+              url: "/Interfaces/create-user"
             },
             {
               id: "user-list",
               icon: "people",
               label: "Registered people",
               children: null,
-              url: ""
+              url: "/Interfaces/user-list"
             }
-          ] , url: ""},
+          ] , url: "#"},
           { id: "voting-centers", icon: "apartment", label: "Voting centers", children:[
             {
               id: "center-list",
               icon: "list",
               label: "Voting centers list",
               children: null,
-              url: ""
+              url: "/Interfaces/center-list"
             },
             {
               id: "add-voting-centers",
               icon: "add",
               label: "New voting center",
               children: null,
-              url: ""
+              url: "/Interfaces/add-center"
             }
-          ] , url: ""},
+          ] , url: "#"},
           { id: "Voting-office", icon: "how_to_vote", label: "Voting office", children:[
             {
               id: "voting-office-list",
               icon: "list",
               label: "Voting office list",
               children: null,
-              url: ""
+              url: "/Interfaces/voting-office-list"
             },
             {
               id: "add-voting-office",
               icon: "add",
               label: "Voting office",
               children: null,
-              url: ""
+              url: "/Interfaces/create-voting-office"
             }
-          ] , url: ""},
+          ] , url: "#"},
           { id: "voting-results", icon: "summarize", label: "Voting result", children:[
             {
               id: "consult-voting-result",
               icon: "visibility",
               label: "Consult results",
               children: null,
-              url: ""
+              url: "/Interfaces/voting-results"
             },
             {
               id: "insert-result",
               icon: "edit",
               label: "Insert a vote result",
               children: null,
-              url: ""
+              url: "/Interfaces/new-result"
             }
-          ] , url: ""},
-          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
-          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+          ] , url: "#"},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: "#"},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "#" },
         ];
       case "ENROLLEUR":
         return [
-          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
-          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "#" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "#" },
           { id: "users", icon: "group", label: "Enrolled electors", children:[
             {
               id: "CreateUsers",
               icon: "person_add",
               label: "Add electors",
               children: null,
-              url: ""
+              url: "/Interfaces/create-user"
             },
             {
               id: "user-list",
               icon: "people",
               label: "Registered electors",
               children: null,
-              url: ""
+              url: "/Interfaces/user-list"
             }
-          ] , url: ""},
-          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
-          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+          ] , url: "#"},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: "#"},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "#" },
         ];
       case "SCRUTATEUR":
         return [
-          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
-          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "#" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "#" },
           { id: "voting-results", icon: "summarize", label: "Voting result", children:[
             {
               id: "consult-voting-result",
               icon: "visibility",
               label: "Consult office results",
               children: null,
-              url: ""
+              url: "/Interfaces/voting-results"
             },
             {
               id: "insert-result",
               icon: "edit",
               label: "Edit office result",
               children: null,
-              url: ""
+              url: "/Interfaces/new-result"
             }
-          ] , url: ""},
-          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
-          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+          ] , url: "#"},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: "#"},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "#" },
         ];
       case "SUPERVISEUR":
         return [
-          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
-          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "#" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "#" },
           { id: "users", icon: "group", label: "Users", children:[
             {
               id: "CreateUsers",
               icon: "person_add",
               label: "Create Users",
               children: null,
-              url: ""
+              url: "/Interfaces/create-user"
             },
             {
               id: "user-list",
               icon: "people",
               label: "Registered people",
               children: null,
-              url: ""
+              url: "/Interfaces/user-list"
             }
-          ] , url: ""},
-          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
-          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+          ] , url: "#"},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: "#"},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "#" },
         ];
       default:
         return [
-          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "" },
-          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "" },
+          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "#" },
+          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "#" },
           { id: "users", icon: "group", label: "Users", children:[
             {
               id: "CreateUsers",
               icon: "person_add",
               label: "Create Users",
               children: null,
-              url: ""
+              url: "/Interfaces/create-user"
             },
             {
               id: "user-list",
               icon: "people",
               label: "Registered people",
               children: null,
-              url: ""
+              url: "/Interfaces/user-list"
             }
-          ] , url: ""},
+          ] , url: "#"},
           { id: "voting-centers", icon: "apartment", label: "Voting centers", children:[
             {
               id: "center-list",
               icon: "list",
               label: "Voting centers list",
               children: null,
-              url: ""
+              url: "/Interfaces/center-list"
             },
             {
               id: "add-voting-centers",
               icon: "add",
               label: "New voting center",
               children: null,
-              url: ""
+              url: "/Interfaces/add-center"
             }
-          ] , url: ""},
+          ] , url: "#"},
           { id: "Voting-office", icon: "how_to_vote", label: "Voting office", children:[
             {
               id: "voting-office-list",
@@ -215,27 +227,27 @@ const Sidebar : React.FC<SidebarProps>= ({role}) => {
               icon: "add",
               label: "Voting office",
               children: null,
-              url: ""
+              url: "#"
             }
-          ] , url: ""},
+          ] , url: "#"},
           { id: "voting-results", icon: "summarize", label: "Voting result", children:[
             {
               id: "consult-voting-result",
               icon: "visibility",
               label: "Consult results",
               children: null,
-              url: ""
+              url: "/Interfaces/voting-results"
             },
             {
               id: "insert-result",
               icon: "edit",
               label: "Insert a vote result",
               children: null,
-              url: ""
+              url: "/Interfaces/new-result"
             }
-          ] , url: ""},
-          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: ""},
-          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "" },
+          ] , url: "#"},
+          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: "#"},
+          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "#" },
         ];
     }
     }
@@ -302,7 +314,7 @@ const Sidebar : React.FC<SidebarProps>= ({role}) => {
                         
                         className="active"
                         >
-                        <a href="#">
+                        <a href={child.url}>
                           <i className="material-icons">{child.icon}</i>
                           <span>{child.label}</span>
                           </a>
@@ -315,15 +327,15 @@ const Sidebar : React.FC<SidebarProps>= ({role}) => {
                 </>
               ) : (
                 item.id === "Menu"?(
-                  <a href="#" id={item.id} ref={toggleBtnRef} onClick={(e)=>toggleSidebar(e)}>
+                  <a href={item.url} id={item.id} ref={toggleBtnRef} onClick={(e)=>toggleSidebar(e)}>
                     <i className="material-icons" >{item.icon}</i>
                     
                   </a>
                 ):(
-                  <a href="#" id={item.id}>
+                  <Link href={item.url} id={item.id}>
                     <i className="material-icons" >{item.icon}</i>
                     <span>{item.label}</span>
-                  </a>
+                  </Link>
                 )
                 
               )}

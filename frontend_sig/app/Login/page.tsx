@@ -3,10 +3,11 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import "./login.scss";
-import myImage from "../../../public/Images/elections_237.png"
+import myImage from "../../public/Images/elections_237.png"
 import { useState } from "react";
 
 import { useRouter } from "next/navigation";
+import Layout from "@/app/components/layout/Layout";
 
 interface usersignin {
   email: string;
@@ -65,6 +66,7 @@ const LoginPage = () => {
   };
 
   return (
+    
     <div className="login-page">
       <div className="grid-container">
         <section className="logo">
@@ -152,6 +154,7 @@ const LoginPage = () => {
         </div>
       </div> */}
     </div>
+    
   );
 };
 

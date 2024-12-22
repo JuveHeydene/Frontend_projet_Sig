@@ -1,8 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import Navbar from '../navbar/Navbar';
-import Sidebar from '../sidebar/Sidebar';
-import './Layout.scss'
+import Navbar from '../components/navbar/Navbar'
+import Sidebar from '../components/sidebar/Sidebar';
+import '../components/layout/Layout.scss'
+import withAuth from '../components/withAuths/page';
+import Head from 'next/head';
 
 interface LayoutProps {
   
@@ -13,32 +15,20 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
   const [role, setRole] = useState<string>("");
   const pagesWithoutLayout = ['/login', '/']; // Pas de Layout (Navbar/Sidebar) pour ces pages
   
-  if (pagesWithoutLayout.includes(typeof window !== 'undefined' ? window.location.pathname : '')) {
-    return <>{children}</>;
-  }
-  useEffect(()=>{
-    const role = localStorage.getItem("roles")
-    if (role) {
-      setRole(role)
-    }
-    else{
-      setRole("ADMINISTRATEUR")
-    }
-    
-  },[])
-  if (!role) {
-    
-  }
-
   return (
+    <>
+    <Head>
+        <title>Mon Application Next.js</title>
+      </Head>
     <div className='layout'>
-      <Navbar />
+      <Navbar/>
       <Sidebar />
       <main>
         {children}
       </main> 
     </div>
+    </>
   );
 };
 
-export default Layout;
+export default withAuth(Layout, ["SCRUTATEUR", "SUPERVISEUR", "ENROLLEUR", "ADMINISTRATEUR"]);;
