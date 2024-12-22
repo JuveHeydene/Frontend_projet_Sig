@@ -13,6 +13,7 @@ interface usersignin {
   email: string;
   password: string;
 }
+
 const LoginPage = () => {
   const router = useRouter();
 
@@ -40,7 +41,7 @@ const LoginPage = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          
+          "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify(formData),
       });
@@ -48,13 +49,13 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("here is your response " + data.access);
-        console.log("here is your response " + data.user.role);
-        
+        console.log("here is your response " + data.id);
+        console.log("here is your response " + data.accessToken);
+        console.log("here is your response " + data.roles);
 
-        localStorage.setItem("token", data.access);
-        localStorage.setItem("email", data.user.email);
-        localStorage.setItem("roles", JSON.stringify(data.user.role));
+        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("roles", JSON.stringify(data.roles));
         alert("User log in  succesfully");
         router.push("/Interfaces/HomePage");
       } else {
