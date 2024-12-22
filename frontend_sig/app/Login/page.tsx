@@ -41,7 +41,6 @@ const LoginPage = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify(formData),
       });
@@ -57,7 +56,7 @@ const LoginPage = () => {
         localStorage.setItem("username", data.username);
         localStorage.setItem("roles", JSON.stringify(data.roles));
         alert("User log in  succesfully");
-        router.push("/Interfaces/HomePage");
+        router.push("/HomePage");
       } else {
         console.error("Error registring user ", response.statusText);
       }
