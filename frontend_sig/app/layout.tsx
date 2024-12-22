@@ -4,10 +4,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "./components/layout/Layout.scss"
 import Link from "next/link";
-import Layout from "./components/layout/Layout";
-import Navbar from "./components/navbar/Navbar";
-import Sidebar from "./components/sidebar/Sidebar";
 
+import AuthWrapper from '@/app/components/AuthWrapper/page';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,8 +27,7 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
-
+}>) { 
   return (
     <html lang="en">
       <head>
@@ -50,17 +47,8 @@ export default function RootLayout({
       </head>
 
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-          
-
-        {/* <div className="layout">
-          <Navbar />
-          <Sidebar />
-          <main>
-            {children}
-          </main>
-        </div>  */}
+      <AuthWrapper>{children}</AuthWrapper>
       </body>
     </html>
   );
-}
+} 

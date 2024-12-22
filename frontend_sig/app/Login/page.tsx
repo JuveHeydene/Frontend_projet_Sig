@@ -3,8 +3,8 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import "./login.scss";
-import myImage from "../../public/Images/elections_237.png"
-import { useState } from "react";
+import myImage from "../../../public/Images/elections_237.png"
+import { useState,useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 import Layout from "@/app/components/layout/Layout";
@@ -49,15 +49,19 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("here is your response " + data.id);
-        console.log("here is your response " + data.accessToken);
-        console.log("here is your response " + data.roles);
+        console.log("here is your response " + data.access);
+        console.log("here is your response " + data.user.role);
 
-        localStorage.setItem("token", data.accessToken);
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("roles", JSON.stringify(data.roles));
+        const expiryTime = new Date().getTime() + 60000; // Token valid for 1 hour
+        
+         console.log("Here is the expiration time juve",expiryTime)
+
+        localStorage.setItem("tokenExpiry", expiryTime.toString());
+        localStorage.setItem("token", data.access);
+        localStorage.setItem("email", data.user.email);
+        localStorage.setItem("roles", JSON.stringify(data.user.role));
         alert("User log in  succesfully");
-        router.push("/Interfaces/HomePage");
+        router.replace("/Interfaces/HomePage");
       } else {
         console.error("Error registring user ", response.statusText);
       }
@@ -65,6 +69,14 @@ const LoginPage = () => {
       console.error("Error registring user");
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      router.replace("/Interfaces/HomePage"); // Redirect to home if logged in
+    }
+}, [router]);
+
 
   return (
     
