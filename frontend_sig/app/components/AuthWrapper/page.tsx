@@ -27,7 +27,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
                 localStorage.removeItem("token");
                 localStorage.removeItem("tokenExpiry");
                 localStorage.removeItem('roles')
-                router.replace("/Interfaces/Login"); // Redirect to login page.
+                router.replace("/Login"); // Redirect to login page.
             }
         };
 

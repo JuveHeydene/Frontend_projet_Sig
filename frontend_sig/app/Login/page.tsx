@@ -73,7 +73,7 @@ const LoginPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      router.replace("/Interfaces/HomePage"); // Redirect to home if logged in
+      router.replace("/HomePage"); // Redirect to home if logged in
     }
 }, [router]);
 
