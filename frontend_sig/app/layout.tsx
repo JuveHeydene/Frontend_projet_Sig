@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
 
+import AuthWrapper from '@/app/components/AuthWrapper/page';
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -23,7 +25,7 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) { 
   return (
     <html lang="en">
       <head>
@@ -40,8 +42,8 @@ export default function RootLayout({
       </head>
 
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+      <AuthWrapper>{children}</AuthWrapper>
       </body>
     </html>
   );
-}
+} 
