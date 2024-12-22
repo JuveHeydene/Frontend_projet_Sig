@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import "./login.scss";
-import myImage from "../../../public/Images/elections_237.png"
+import myImage from "../../public/Images/elections_237.png"
 import { useState,useEffect } from "react";
 
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ const LoginPage = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          "Access-Control-Allow-Origin": "*",
+          
         },
         body: JSON.stringify(formData),
       });
@@ -61,7 +61,7 @@ const LoginPage = () => {
         localStorage.setItem("email", data.user.email);
         localStorage.setItem("roles", JSON.stringify(data.user.role));
         alert("User log in  succesfully");
-        router.replace("/Interfaces/HomePage");
+        router.replace("/HomePage");
       } else {
         console.error("Error registring user ", response.statusText);
       }
