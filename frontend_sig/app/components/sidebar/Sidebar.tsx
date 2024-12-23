@@ -220,14 +220,14 @@ const Sidebar = () => {
               icon: "list",
               label: "Voting office list",
               children: null,
-              url: ""
+              url: "/Interfaces/voting-office-list"
             },
             {
               id: "add-voting-office",
               icon: "add",
               label: "Voting office",
               children: null,
-              url: "#"
+              url: "/Interfaces/create-voting-office"
             }
           ] , url: "#"},
           { id: "voting-results", icon: "summarize", label: "Voting result", children:[

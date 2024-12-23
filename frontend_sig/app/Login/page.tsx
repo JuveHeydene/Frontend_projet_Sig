@@ -52,7 +52,7 @@ const LoginPage = () => {
         console.log("here is your response " + data.access);
         console.log("here is your response " + data.user.role);
 
-        const expiryTime = new Date().getTime() + 60000; // Token valid for 1 hour
+        const expiryTime = new Date().getTime() + 6000000; // Token valid for 1 hour
         
          console.log("Here is the expiration time juve",expiryTime)
 
