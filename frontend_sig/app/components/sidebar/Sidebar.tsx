@@ -220,14 +220,14 @@ const Sidebar = () => {
               icon: "list",
               label: "Voting office list",
               children: null,
-              url: ""
+              url: "/Interfaces/voting-office-list"
             },
             {
               id: "add-voting-office",
               icon: "add",
               label: "Voting office",
               children: null,
-              url: "#"
+              url: "/Interfaces/create-voting-office"
             }
           ] , url: "#"},
           { id: "voting-results", icon: "summarize", label: "Voting result", children:[
@@ -310,14 +310,12 @@ const Sidebar = () => {
                       
                         <li
                         key={child.id}
-                        
-                        
                         className="active"
                         >
-                        <a href={child.url}>
-                          <i className="material-icons">{child.icon}</i>
-                          <span>{child.label}</span>
-                          </a>
+                        <Link href={child.url}>
+                            <i className="material-icons">{child.icon}</i>
+                            <span>{child.label}</span>
+                        </Link>
                         </li>
                      
                       

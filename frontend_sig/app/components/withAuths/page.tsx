@@ -36,7 +36,7 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>, required
         setIsAuthorized(true);
       } else {
         // Redirect if the user does not have permission
-        router.replace('/UnAuthorized');
+        router.replace('/Login');
       }
     }, [router]);
 
