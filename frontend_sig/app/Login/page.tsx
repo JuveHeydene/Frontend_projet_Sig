@@ -32,10 +32,42 @@ const LoginPage = () => {
     });
   };
 
+  const decodeBase64 = (base64: string) => {
+    try {
+      return JSON.parse(atob(base64));
+    } catch (error) {
+      console.error("Error decoding base64:", error);
+      return null;
+    }
+  };
+
+  const decodeToken = (token: string | null) => {
+    if (!token) {
+      console.log("No token provided or found");
+      return;
+    }
+
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      console.error("Invalid token format");
+      return;
+    }
+
+    const header = decodeBase64(parts[0]);
+    const payload = decodeBase64(parts[1]);
+
+    //console.log("Header:", header);
+    //console.log("Payload:", payload);
+
+    return payload;
+  };
+
+  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log("User to log in info :", formData);
+      //console.log("User to log in info :", formData);
       const response = await fetch("http://localhost:8000/users/login/", {
         method: "POST",
         headers: {
@@ -45,21 +77,28 @@ const LoginPage = () => {
         },
         body: JSON.stringify(formData),
       });
-      console.log("HERE IS data to send log in ", formData);
+     // console.log("HERE IS data to send log in ", formData);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("here is your response " + data.access);
-        console.log("here is your response " + data.user.role);
-
-        const expiryTime = new Date().getTime() + 60000; // Token valid for 1 hour
-        
-         console.log("Here is the expiration time juve",expiryTime)
-
+        //console.log("here is your response " + data.access);
+        //console.log("here is your response " + data.user.role);
+        const infotoken =decodeToken(data.access);
+        //console.log("info is",infotoken);
+        const expiryTime=infotoken.exp*1000
+        //console.log ("expiration time",expiryTime)
+        //const now = new Date().getTime();
+        //console.log("current time",now)
         localStorage.setItem("tokenExpiry", expiryTime.toString());
         localStorage.setItem("token", data.access);
-        localStorage.setItem("email", data.user.email);
         localStorage.setItem("roles", JSON.stringify(data.user.role));
+
+        {/*const expiryTime = new Date().getTime() + 3600000; // Token valid for 1 hour
+        console.log("Here is the expiration time juve",expiryTime)
+        localStorage.setItem("token", data.access);
+        localStorage.setItem("email", data.user.email);
+        localStorage.setItem("roles", JSON.stringify(data.user.role));*/}
+
         alert("User log in  succesfully");
         router.replace("/HomePage");
       } else {
