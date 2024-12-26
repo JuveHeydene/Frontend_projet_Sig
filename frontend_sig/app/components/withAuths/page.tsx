@@ -14,6 +14,19 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>, required
     const router = useRouter();
     const [isAuthorized, setIsAuthorized] = useState(false);
 
+    const isTokenValid = (): boolean => {
+      const token = localStorage.getItem("token");
+      const expiry = localStorage.getItem("tokenExpiry");
+  
+      if (!token || !expiry) {
+          return false; 
+      }
+  
+      const now = new Date().getTime();
+      return now > parseInt(expiry); // Check if the current time exceeds the expiry.
+  };
+
+
     useEffect(() => {
       // Check if the user has the correct roles
       const storedRoles = JSON.parse(localStorage.getItem('roles') || '[]');
