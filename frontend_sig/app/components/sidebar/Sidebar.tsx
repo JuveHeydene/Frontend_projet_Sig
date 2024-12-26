@@ -20,24 +20,25 @@ interface MenuItem {
 const Sidebar = () => {
   const sidebarRef = useRef<HTMLElement>(null);
   const toggleBtnRef = useRef<HTMLAnchorElement | null>(null);
-  const [menuItems, setMenuItems] = useState<Array<MenuItem>>([]);
-   const [role, setRole] = useState<string>("");
-  useEffect(()=>{
-      const role = localStorage.getItem("roles")
-      if (role) {
-        setRole(role)
-      }
-      else{
-        setRole("ADMINISTRATEUR")
-      }
-      
-    },[])
+  const [menuItems, setMenuItems] = useState<Array<MenuItem>|undefined>([]);
+  const [role, setRole] = useState<string>("");
   useEffect(() => {
-    let items: Array<MenuItem> = [];
-    console.log("Role:", role);
+  const storedRole = localStorage.getItem("roles");
+  console.log("Stored role from localStorage:", storedRole);
+  if (storedRole) {
+    setRole(JSON.parse(storedRole));
+  } else {
+    setRole("ADMINISTRATEUR");
+  }
+}, []); // Supprimer `role` des dépendances pour éviter des boucles infinies.
 
-    const getMenusItems = ()=>{
-      switch (role) {
+useEffect(() => {
+  if (!role) return; // Empêche la logique si `role` est vide.
+
+  console.log("Role updated:", role);
+
+  const getMenuItems = (): Array<MenuItem> => {
+    switch (role) {
       case "ADMINISTRATEUR":
         return [
           { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "#" },
@@ -179,82 +180,15 @@ const Sidebar = () => {
           { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "#" },
         ];
       default:
-        return [
-          { id: "Menu", icon: "keyboard_double_arrow_left", label: null, children: null ,url: "#" },
-          { id: "Dashboard", icon: "dashboard", label: "Dashboard", children: null ,url: "#" },
-          { id: "users", icon: "group", label: "Users", children:[
-            {
-              id: "CreateUsers",
-              icon: "person_add",
-              label: "Create Users",
-              children: null,
-              url: "/Interfaces/create-user"
-            },
-            {
-              id: "user-list",
-              icon: "people",
-              label: "Registered people",
-              children: null,
-              url: "/Interfaces/user-list"
-            }
-          ] , url: "#"},
-          { id: "voting-centers", icon: "apartment", label: "Voting centers", children:[
-            {
-              id: "center-list",
-              icon: "list",
-              label: "Voting centers list",
-              children: null,
-              url: "/Interfaces/center-list"
-            },
-            {
-              id: "add-voting-centers",
-              icon: "add",
-              label: "New voting center",
-              children: null,
-              url: "/Interfaces/add-center"
-            }
-          ] , url: "#"},
-          { id: "Voting-office", icon: "how_to_vote", label: "Voting office", children:[
-            {
-              id: "voting-office-list",
-              icon: "list",
-              label: "Voting office list",
-              children: null,
-              url: "/Interfaces/voting-office-list"
-            },
-            {
-              id: "add-voting-office",
-              icon: "add",
-              label: "Voting office",
-              children: null,
-              url: "/Interfaces/create-voting-office"
-            }
-          ] , url: "#"},
-          { id: "voting-results", icon: "summarize", label: "Voting result", children:[
-            {
-              id: "consult-voting-result",
-              icon: "visibility",
-              label: "Consult results",
-              children: null,
-              url: "/Interfaces/voting-results"
-            },
-            {
-              id: "insert-result",
-              icon: "edit",
-              label: "Insert a vote result",
-              children: null,
-              url: "/Interfaces/new-result"
-            }
-          ] , url: "#"},
-          { id: "Settings", icon: "settings", label: "Settings", children: null  ,url: "#"},
-          { id: "Logout", icon: "logout", label: "Log Out", children: null ,url: "#" },
-        ];
+        console.log("Role is :", role)
+        return []
     }
-    }
-    console.log("Items : ", items)
-    setMenuItems(getMenusItems())
-    
-  }, [role]);
+  };
+
+  const items = getMenuItems();
+  console.log("Generated menu items:", items);
+  setMenuItems(items);
+}, [role]); // Dépend uniquement de `role`.
   const toggleSidebar = (event:React.MouseEvent)=>{
     if (sidebarRef.current) {
       sidebarRef.current.classList.toggle('close')
@@ -282,7 +216,7 @@ const Sidebar = () => {
       toggleBtnRef.current?.classList.toggle('rotate')
     }
   }
-  console.log("menu items : ", menuItems)
+
   
 
   
@@ -290,7 +224,7 @@ const Sidebar = () => {
   return (
     <aside ref={sidebarRef}>
         <ul>
-          {menuItems.map((item) => (
+          {menuItems?.map((item) => (
             <li
               
               key={item.id}
