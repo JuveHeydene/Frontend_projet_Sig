@@ -71,8 +71,14 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const infotoken = decodeToken(data.access);
-        const expiryTime = infotoken.exp * 1000;
+        //console.log("here is your response " + data.access);
+        //console.log("here is your response " + data.user.role);
+        const infotoken =decodeToken(data.access);
+        console.log("info is",infotoken);
+        const expiryTime=infotoken.exp*1000
+        //console.log ("expiration time",expiryTime)
+        //const now = new Date().getTime();
+        //console.log("current time",now)
         localStorage.setItem("tokenExpiry", expiryTime.toString());
         localStorage.setItem("token", data.access);
         localStorage.setItem("roles", JSON.stringify(data.user.role));
