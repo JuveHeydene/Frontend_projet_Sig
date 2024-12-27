@@ -19,3 +19,7 @@ export interface VotingCenter {
     label: string;
     value: string;
   }
+export interface ArrondissmentOptions{
+  label: string;
+    value: string;
+}

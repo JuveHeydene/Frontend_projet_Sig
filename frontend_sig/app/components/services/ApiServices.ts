@@ -100,9 +100,113 @@ export const create_new_voting_office = async(data:any)=>{
     throw error;
   }
 }
+export const create_new_voting_center = async(data:any)=>{
+  try{
+    const response = await api.post(`${API_BASE_URL}/circonscription/create_new_voting_center/`,
+      data
+    )
+    return response.data
+  }
+  catch(error){
+    console.error("Erreur lors de la création du bureau de votes :", error);
+    throw error;
+  }
+}
+const fetchRegionsAndDepartments = async () => {
+  try {
+    const response = await api.get(`${API_BASE_URL}/circonscription/regions_departments/`);
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors du chargement des régions et départements:', error);
+  }
+};
+const fetchVotingCenters = async (filters:any) => {
+  try {
+    const response = await api.get(`${API_BASE_URL}/circonscription/voting_centers_list/`, {
+      params: {
+        center_name: filters.center_name,
+        arrondissement_name: filters.arrondissement_name,
+        region_id: filters.region_id,
+        departement_id: filters.departement_id,
+      },
+    });
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors du chargement des centres de vote:', error);
+  }
+};
+const fetchVotingOffice = async (filters:any) => {
+  try {
+    const response = await api.get(`${API_BASE_URL}/circonscription/voting_office_list/`, {
+      params: {
+        center_name: filters.center_name,
+        arrondissement_name: filters.arrondissement_name,
+        region_id: filters.region_id,
+        departement_id: filters.departement_id,
+      },
+    });
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors du chargement des centres de vote:', error);
+  }
+};
+const updateVotingCenter = async (id: number, data: { center_name: string; arrondissement_name: string }) => {
+  try {
+    const response = await api.put(`/circonscription/voting-centers/${id}/update/`, data);
+    return response.data; // Retourne la réponse du backend après la mise à jour
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du centre de vote:", error);
+    throw error;
+  }
+};
+const deleteVotingCenter = async (id: number) => {
+  try {
+    const response = await api.delete(`/circonscription/voting-centers/${id}/delete/`);
+    return response.data; // Retourne la réponse du backend après la suppression
+  } catch (error) {
+    console.error("Erreur lors de la suppression du centre de vote:", error);
+    throw error;
+  }
+};
+const updateVotingOffice = async (id: number, data: { office_name: string; center_name: string }) => {
+  try {
+    const response = await api.put(`/circonscription/voting-office/${id}/update/`, data);
+    return response.data; // Retourne la réponse du backend après la mise à jour
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du centre de vote:", error);
+    throw error;
+  }
+};
+const deleteVotingOffice = async (id: number) => {
+  try {
+    const response = await api.delete(`/circonscription/voting-office/${id}/delete/`);
+    return response.data; // Retourne la réponse du backend après la suppression
+  } catch (error) {
+    console.error("Erreur lors de la suppression du centre de vote:", error);
+    throw error;
+  }
+};
+export const fetchAllArrondissments = async ()=>{
+  try {
+    const response = await api.get(`/circonscription/arrondissments`);
+    return response.data; // Retourne la réponse du backend après la suppression
+  } catch (error) {
+    console.error("Erreur lors de la suppression du centre de vote:", error);
+    throw error;
+  }
+};
 
 export default {
   createResultatDeVote,
   fetchResultatsPourBureauDeVote,
   create_new_voting_office,
+  create_new_voting_center,
+  fetchRegionsAndDepartments,
+  fetchVotingCenters,
+  updateVotingCenter,
+  deleteVotingCenter,
+  updateVotingOffice,
+  deleteVotingOffice,
+  fetchAllArrondissments,
+  fetchVotingOffice
 };

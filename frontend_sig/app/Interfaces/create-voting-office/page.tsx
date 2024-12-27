@@ -20,10 +20,7 @@ const CreateVotingOffice = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [votingCenters, setVotingCenters] = useState<VotingCenter[]>([]);
-  const [formcirconsription, setcirconsription] = useState<VotingOffice>({
-    nom: "",
-    votingCenterName: "",
-  });
+  
   const [formBureauvote, setBureauvote] = useState<BureauVote>({
     nom: "",
     votingCenterName: "",
