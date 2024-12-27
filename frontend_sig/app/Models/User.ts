@@ -15,4 +15,7 @@ export interface User {
     is_active: true;
     is_staff: false;
   }
-  
+export interface VotingCenter {
+    label: string;
+    value: string;
+  }
