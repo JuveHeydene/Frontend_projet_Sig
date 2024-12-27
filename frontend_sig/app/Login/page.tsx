@@ -3,8 +3,8 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import "./login.scss";
-import myImage from "../../public/Images/elections_237.png"
-import { useState,useEffect } from "react";
+import myImage from "../../public/Images/elections_237.png";
+import { useState, useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 import Layout from "@/app/components/layout/Layout";
@@ -46,23 +46,15 @@ const LoginPage = () => {
       console.log("No token provided or found");
       return;
     }
-
     const parts = token.split(".");
     if (parts.length !== 3) {
       console.error("Invalid token format");
       return;
     }
-
     const header = decodeBase64(parts[0]);
     const payload = decodeBase64(parts[1]);
-
-    //console.log("Header:", header);
-    //console.log("Payload:", payload);
-
     return payload;
   };
-
-  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -73,11 +65,9 @@ const LoginPage = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          
         },
         body: JSON.stringify(formData),
       });
-     // console.log("HERE IS data to send log in ", formData);
 
       if (response.ok) {
         const data = await response.json();
@@ -92,13 +82,7 @@ const LoginPage = () => {
         localStorage.setItem("tokenExpiry", expiryTime.toString());
         localStorage.setItem("token", data.access);
         localStorage.setItem("roles", JSON.stringify(data.user.role));
-
-        {/*const expiryTime = new Date().getTime() + 3600000; // Token valid for 1 hour
-        console.log("Here is the expiration time juve",expiryTime)
-        localStorage.setItem("token", data.access);
-        localStorage.setItem("email", data.user.email);
-        localStorage.setItem("roles", JSON.stringify(data.user.role));*/}
-
+        localStorage.setItem("user", JSON.stringify(data.user));
         alert("User log in  succesfully");
         router.replace("/HomePage");
       } else {
@@ -110,54 +94,49 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       router.replace("/HomePage"); // Redirect to home if logged in
     }
-}, [router]);
-
+  }, [router]);
 
   return (
-    
     <div className="login-page">
       <div className="grid-container">
         <section className="logo">
-              <Image src={myImage} alt="Description de l'image"/>
-              <h1>Système de management des elections au Cameroun</h1>
+          <Image src={myImage} alt="Description de l'image" />
+          <h1>Système de management des elections au Cameroun</h1>
         </section>
         <section className="login-form-contain">
           <form action="" onSubmit={handleSubmit} className="login-form">
-          <span className="form-title">Connectez-vous</span>
-          <div className="inputs">
-            <input
-              type="text"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="email"
-            />
-            <input
+            <span className="form-title">Connectez-vous</span>
+            <div className="inputs">
+              <input
+                type="text"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="email"
+              />
+              <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-            />
-            <button
-              type="submit"
-              className="connexion"
-            >
-              Sign In
-            </button>
+              />
+              <button type="submit" className="connexion">
+                Sign In
+              </button>
             </div>
             <div className="line"></div>
             <a href="/sigin" className="oublie">
               Mot de passe oublié?
             </a>
           </form>
-        </section> 
+        </section>
       </div>
-       
+
       {/* <div className="flex flex-row w-full h-screen  justify-between">
         <div className="flex flex-col items-center mt-20  w-full gap-y-4 ">
           <div
@@ -206,7 +185,6 @@ const LoginPage = () => {
         </div>
       </div> */}
     </div>
-    
   );
 };
 
