@@ -1,53 +1,76 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import "./NewVotingOffice.scss";
+import { VotingCenter } from "@/app/Models/User";
+import ApiServices, { fetchAllVotingCenters } from "@/app/components/services/ApiServices";
+import VotingCenterSelect from "@/app/components/VotingCenterSelector/VotingCenterSelector";
+import axios from "axios";
 
-interface Circonscription {
+interface VotingOffice {
   nom: string;
-  circonscriptionname: string;
+  votingCenterName: string;
 }
 interface BureauVote {
   nom: string;
-  circonscriptionname: string;
+  votingCenterName: string|undefined;
 }
 
 const CreateVotingOffice = () => {
-  const [formcirconsription, setcirconsription] = useState<Circonscription>({
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [votingCenters, setVotingCenters] = useState<VotingCenter[]>([]);
+  const [formcirconsription, setcirconsription] = useState<VotingOffice>({
     nom: "",
-    circonscriptionname: "",
+    votingCenterName: "",
   });
   const [formBureauvote, setBureauvote] = useState<BureauVote>({
     nom: "",
-    circonscriptionname: "",
+    votingCenterName: "",
   });
-  const [circonscriptions, setCirconscriptions] = useState<string[]>([
-    "Circonscription A",
-    "Circonscription B",
-    "Circonscription C",
-    "Circonscription D",
-    "Circonscription E",
-    "Circonscription F",
-  ]);
+  const [selectedVotingCenter, setSelectedVotingCenter] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
+
+  
+  useEffect(() => {
+    const loadVotingCentersAsOptions = async () => {
+      try {
+        const votingCenters = await fetchAllVotingCenters();
+        setVotingCenters(votingCenters);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      }
+    };
+    loadVotingCentersAsOptions();
+  }, []);
+  const handleCenterChange = (
+    selectedOption: { label: string; value: string } | null
+  ) => {
+    setSelectedVotingCenter(selectedOption);
+    setBureauvote({
+      ...formBureauvote,
+      votingCenterName: selectedOption?.value,
+    });
+  };
   const handleSubmitcreatebureauvote = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
     try {
-      const response = await fetch("http://localhost:3000/bureau/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify(formcirconsription),
-      });
-      if (response.ok) {
-        alert("bureau created successfully!");
-      } else {
-        console.error("Error creating bureau:", response.statusText);
-      }
+      const response = await ApiServices.create_new_voting_office(formBureauvote);
+      setSuccess('Bureau de vote créé avec succès!');
+      console.log("Réponse backend:", response);
     } catch (error) {
+      setError('Une erreur s\'est produite.');
       console.error("Error creating bureau:", error);
+    }
+    finally{
+      setLoading(false);
     }
   };
   const handleInputbureaudevote = (
@@ -61,15 +84,15 @@ const CreateVotingOffice = () => {
     });
   };
   return (
-    <div className="w-full mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
+    <div className="new-voting-office w-full mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-4 text-center">
-        Ajouter un Bureau de vote{" "}
+        Add a new voting office{" "}
       </h1>
       <form onSubmit={handleSubmitcreatebureauvote}>
         {/* Champ Nom */}
         <div className="mb-4">
           <label htmlFor="nom" className="block text-gray-700 font-medium mb-2">
-            Nom
+            Office Name
           </label>
           <input
             type="text"
@@ -77,7 +100,7 @@ const CreateVotingOffice = () => {
             name="nom"
             value={formBureauvote.nom}
             onChange={handleInputbureaudevote}
-            placeholder="Entrez le nom"
+            placeholder="Enter office voting name"
             className="w-full p-2 border border-gray-300 rounded-lg"
           />
         </div>
@@ -85,34 +108,29 @@ const CreateVotingOffice = () => {
         {/* Liste déroulante pour Circonscription */}
         <div className="mb-4">
           <label
-            htmlFor="circonscriptionname"
+            htmlFor="votingCenterName"
             className="block text-gray-700 font-medium mb-2"
           >
-            Circonscription
+            Voting Center
           </label>
-          <select
-            id="circonscriptionname"
-            name="circonscriptionname"
-            value={formBureauvote.circonscriptionname}
-            onChange={handleInputbureaudevote}
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          >
-            <option value="">Sélectionnez une circonscription</option>
-            {circonscriptions.map((circ, index) => (
-              <option key={index} value={circ}>
-                {circ}
-              </option>
-            ))}
-          </select>
+          <VotingCenterSelect
+            votingCenters={votingCenters}
+            onChange={handleCenterChange}
+            value={selectedVotingCenter}
+          />
         </div>
 
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          disabled={loading}
         >
-          Soumettre
+          Create new voting office
         </button>
       </form>
+      {loading && <p>Chargement...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
     </div>
   );
 };

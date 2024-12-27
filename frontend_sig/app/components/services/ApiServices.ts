@@ -74,9 +74,35 @@ export const fetchResultatsPourBureauDeVote = async (bureauDeVoteId: number) => 
     throw error;
   }
 };
+//Récupérer tous les centres de votes 
+export const fetchAllVotingCenters = async()=>{
+  try{
+    const response = await axios.get(`${API_BASE_URL}/circonscription/get_voting_centers_as_list_options`)
+    console.log(response.data)
+    return await response.data
+  }
+  catch(error){
+    console.error("Erreur lors de la récupération des centres de votes :", error);
+    throw error;
+  }
 
+}
+
+export const create_new_voting_office = async(data:any)=>{
+  try{
+    const response = await api.post(`${API_BASE_URL}/circonscription/create_new_voting_office/`,
+      data
+    )
+    return response.data
+  }
+  catch(error){
+    console.error("Erreur lors de la création du bureau de votes :", error);
+    throw error;
+  }
+}
 
 export default {
   createResultatDeVote,
-  fetchResultatsPourBureauDeVote
+  fetchResultatsPourBureauDeVote,
+  create_new_voting_office,
 };
