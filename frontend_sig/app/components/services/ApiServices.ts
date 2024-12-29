@@ -55,9 +55,13 @@ export const createResultatDeVote = async (
     });
 
     return response.data;  // Retourne les données du backend (résultat créé)
-  } catch (error) {
-    console.error("Erreur lors de la création des résultats de vote:", error);
-    throw error;
+  } catch (err:any) {
+    if (err.response && err.response.status === 400) {
+      // Si le serveur retourne un statut 400 (HTTP_BAD_REQUEST)
+      console.error("Erreur backend (dépassement de voix) :", err.response.data);
+    } else {
+      console.error("Erreur générale :", err);
+    }
   }
 };
 // Ajout dans ApiServices.ts
@@ -195,6 +199,17 @@ export const fetchAllArrondissments = async ()=>{
     throw error;
   }
 };
+const upload_pv = async (bureau_id:number, formData:any)=>{
+  try{
+    console.log("Formdata :", formData)
+    const response = await api.post(`${API_BASE_URL}/circonscription/upload_pv/${bureau_id}/`,formData)
+    
+    return response;
+  }catch(error){
+    console.error("Erreur lors du chargement du proces verbale :", error);
+    throw error;
+  }
+}
 
 export default {
   createResultatDeVote,
@@ -208,5 +223,6 @@ export default {
   updateVotingOffice,
   deleteVotingOffice,
   fetchAllArrondissments,
-  fetchVotingOffice
+  fetchVotingOffice,
+  upload_pv
 };

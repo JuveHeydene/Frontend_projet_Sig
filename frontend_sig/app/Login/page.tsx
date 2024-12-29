@@ -84,7 +84,7 @@ const LoginPage = () => {
         localStorage.setItem("roles", JSON.stringify(data.user.role));
         localStorage.setItem("user", JSON.stringify(data.user));
         alert("User log in  succesfully");
-        router.replace("/HomePage");
+        router.replace("/Interfaces/dashboard");
       } else {
         console.error("Error registring user ", response.statusText);
       }
