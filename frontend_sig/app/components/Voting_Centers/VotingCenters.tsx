@@ -66,7 +66,7 @@ const VotingCenters: React.FC = () => {
   useEffect(() => {
     fetchVotingCenters(filters);
     setCurrentPage(1); // Réinitialiser à la première page lorsque les filtres changent
-  }, [filters]);
+  }, [filters]); 
 
   // Mettre à jour les filtres
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

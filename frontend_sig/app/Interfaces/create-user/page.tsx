@@ -3,26 +3,49 @@ import React, {ReactNode, ReactElement, useState, useEffect, useRef } from 'reac
 import { NextPage } from "next";
 import Layout from '../../components/layout/Layout'
 import withAuth from '@/app/components/withAuths/page';
+import { VotingOffice,VotingCenter } from "@/app/Models/User";
+import VotingOfficeSelect from "@/app/components/VotingOfficeSelector/page";
+import VotingCenterSelect from "@/app/components/VotingCenterSelector/VotingCenterSelector";
+import ApiServices , { fetchAllVotingOffices,fetchAllVotingCenters } from "@/app/components/services/ApiServices";
+import { useRouter,useSearchParams, usePathname } from 'next/navigation';
 import Head from 'next/head';
 import Image from 'next/image';
 import  noimage2 from "@/app/noimage.png"
 
-interface User {
-  noms: string;
-  prenoms: string;
+export interface User {
+  name: string;
+  surname: string;
   email:string;
   birthdate: string;
-  political_party: string;
+  political_party: string|undefined;
   tel: string;
   password: string;
   gender: string;
   role: string;
-  bureau: string;
-  userImage:string;
+  bureau_de_vote_name: string|undefined|null;
+  centre_de_vote_name: string|undefined|null;
+  userimage:string;
 }
+type Region = {
+  id: string;
+  name: string;
+};
+
+type Department = {
+  id: string;
+  name: string;
+};
+
+
 
 
 const CreateUsers = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const modification_info = searchParams.get('userinfotobemodified');
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const title = "New User"
   const regionName = "CENTRE";
   const [bureauDeVoteList, setBureauDeVoteList] = useState<string[]>([]);
@@ -35,36 +58,137 @@ const CreateUsers = () => {
     "Circonscription F",
   ]);
 
+  const [selectedVotingOffice, setSelectedVotingOffice] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
+
+
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [votingCenters, setVotingCenters] = useState<VotingCenter[]>([]);
+  const [votingOffices, setVotingOffices] = useState<VotingOffice[]>([]);
+  const [usertoedit, setusertoedit] = useState<number>(-1); 
+
+  const [filters, setFilters] = useState({
+    center_name: "",
+    arrondissement_name: "",
+    region_id: "",
+    departement_id: "",
+  });
+
+  const [filterscenter, setFilterscenter] = useState({
+    center_name: "",
+    arrondissement_name: "",
+    region_id: "",
+    departement_id: "",
+  });
+
 
   const [role, setRole] = useState<string>("")
   const [formUser, setFormUser] = useState<User>({
-    noms: "",
-    prenoms: "",
+    name: "",
+    surname: "",
     email:"",
     birthdate: "",
     political_party: "",
     tel: "",
-    password: "",
+    password: "0000",
     gender: "",
     role: "",
-    bureau: "",
-    userImage:"",
+    bureau_de_vote_name: null,
+    centre_de_vote_name:null,
+    userimage:"",
   });
   
   const resetForm = () => {
     setFormUser({
-      noms: "",
-      prenoms: "",
+      name: "",
+      surname: "",
       email:"",
       birthdate: "",
       political_party: "",
       tel: "",
-      password: "",
+      password: "0000",
       gender: "",
       role: "",
-      bureau: "",
-      userImage: "",
+      bureau_de_vote_name: null,
+      centre_de_vote_name:null,
+      userimage: "",
     });
+  };
+
+  const [selectedVotingCenter, setSelectedVotingCenter] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (modification_info) {
+      const infomodif = JSON.parse(decodeURIComponent(modification_info as string));;
+      setFormUser(infomodif);
+      setRole(infomodif.role)
+      setusertoedit(infomodif.id)
+      setIsEditMode(true);
+      setSelectedVotingCenter(infomodif.centre_de_vote_name)
+    }
+  }, [modification_info]);
+
+
+  //charger les centres de vote
+  useEffect(() => {
+    const loadVotingCentersAsOptions = async () => {
+      try {
+        const votingCenters = await fetchAllVotingCenters();
+        setVotingCenters(votingCenters);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      }
+    };
+    loadVotingCentersAsOptions();
+  }, []);
+  
+  const handleCenterChange = (
+    selectedOption: { label: string; value: string } | null
+  ) => {
+    setSelectedVotingCenter(selectedOption);
+    setFormUser({
+      ...formUser,
+      centre_de_vote_name:selectedOption?.value,
+    });
+  };
+
+
+  const handleOfficeChange = (
+    selectedOption: { label: string; value: string } | null
+  ) => {
+    setSelectedVotingOffice(selectedOption);
+    setFormUser({
+      ...formUser,
+      bureau_de_vote_name:selectedOption?.value,
+    }
+      
+
+    )
+
+    
+  };
+
+//office filtered changes
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+//center filtered changes
+  const handlecenterFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilterscenter((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
   };
 
   const handleInputuserChange = (
@@ -85,7 +209,7 @@ const CreateUsers = () => {
         if (imageUrl) {
           setFormUser((prevData) => ({
             ...prevData,
-            userImage: imageUrl,
+            userimage: imageUrl,
           }));
         }
       }
@@ -122,6 +246,77 @@ const CreateUsers = () => {
       }
     };
   
+
+ 
+    
+  
+
+     // Charger les Bureau de vote
+  const fetchVotingOffices = async (filters: any) => {
+    try {
+      const response = await ApiServices.fetchVotingOfficelabelvalue(filters);
+      console.log("Bureau de votes :" , response)
+      setVotingOffices(response);
+    } catch (error) {
+      console.error("Erreur lors du chargement des centres de vote:", error);
+    }
+  };
+
+
+
+
+      // Charger les Bureau de vote lors des changements de filtres
+  useEffect(() => {
+    fetchVotingOffices(filters);
+  }, [filters]); 
+
+     // Charger les centre de vote
+     const fetchVotingCenters = async (filterscenter: any) => {
+      try {
+        const response = await ApiServices.fetchVotingCenterslabelvalue(filterscenter);
+        console.log("Centre de votes :" , response)
+        setVotingCenters(response);
+      } catch (error) {
+        console.error("Erreur lors du chargement des centres de vote:", error);
+      }
+    };
+  
+  
+  
+  
+        // Charger les centre de vote lors des changements de filtres
+    useEffect(() => {
+      fetchVotingCenters(filterscenter);
+    }, [filterscenter]); 
+
+
+     // Charger les options des régions et départements
+  useEffect(() => {
+    const fetchRegionsAndDepartments = async () => {
+      try {
+        const response = await ApiServices.fetchRegionsAndDepartments();
+        setRegions(response.regions);
+        setDepartments(response.departments);
+      } catch (error) {
+        console.error("Erreur lors du chargement des régions et départements:", error);
+      }
+    };
+
+    fetchRegionsAndDepartments();
+  }, []);
+
+  //charger la liste des bureau de vote 
+  useEffect(() => {
+    const loadVotingOfficesAsOptions = async () => {
+      try {
+        const votingOffices = await fetchAllVotingOffices();
+        setVotingOffices(votingOffices);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      }
+    };
+    loadVotingOfficesAsOptions();
+  }, []);
    
   
 
@@ -131,26 +326,39 @@ const CreateUsers = () => {
       e.preventDefault();
       formUser.role=role
       console.log(formUser)
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch('http://localhost:8000/users/createuser/', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-            
-          },
-          body: JSON.stringify(formUser),
-        });
-        if (response.ok) {
-          alert("user created successfully!");
-        } else {
-          console.error("Error creating user:", response.statusText);
+
+      if (isEditMode) {
+        try {
+          await ApiServices.updateuser(usertoedit, formUser);
+          alert("user edited succesfully")
+          router.push("/Interfaces/user-list")
+        } catch (error) {
+          console.error("Erreur lors de la mise à jour du centre de vote:", error);
         }
-      } catch (error) {
-        console.error("Error creating user:", error);
+      } else {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch('http://localhost:8000/users/createuser/', {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+              
+            },
+            body: JSON.stringify(formUser),
+          });
+          if (response.ok) {
+            alert("user created successfully!");
+          } else {
+            console.error("Error creating user:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error creating user:", error);
+        }
       }
+
+     
 
       resetForm();
     };
@@ -177,7 +385,6 @@ const CreateUsers = () => {
   
           const data = await response.json();
           const bureauDeVote = data.bureau_de_vote_;
-          console.log(bureauDeVote);
           setBureauDeVoteList(bureauDeVote);
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -205,14 +412,14 @@ const CreateUsers = () => {
       <div>
         {/* Noms */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1" htmlFor="noms">
+          <label className="block text-gray-700 mb-1" htmlFor="name">
             Noms
           </label>
           <input
-            id="noms"
+            id="name"
             type="text"
-            name="noms"
-            value={formUser.noms}
+            name="name"
+            value={formUser.name}
             onChange={handleInputuserChange}
             placeholder="Entrer le nom"
             className="w-full p-2 border border-gray-300 rounded"
@@ -221,14 +428,14 @@ const CreateUsers = () => {
 
         {/* Prénoms */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1" htmlFor="prenoms">
+          <label className="block text-gray-700 mb-1" htmlFor="surname">
             Prénoms
           </label>
           <input
-            id="prenoms"
+            id="surname"
             type="text"
-            name="prenoms"
-            value={formUser.prenoms}
+            name="surname"
+            value={formUser.surname}
             onChange={handleInputuserChange}
             placeholder="Entrer le prénom"
             className="w-full p-2 border border-gray-300 rounded"
@@ -344,29 +551,29 @@ const CreateUsers = () => {
             <input
               type="file"
               accept="image/*"
-              name="vehicleImage"
+              name="userimage"
               onChange={handleFileChange}
               className="border-custom-darkblue mb-2"
-              required
+              
             />
-            {!formUser.userImage && (
+            {!formUser.userimage && (
               <Image
                 className="w-full h-48 object-cover"
                 src={noimage2}
                 alt="Default"
               />
             )}
-            {formUser.userImage && (
+            {formUser.userimage && (
               <img
                 className="w-full h-48 object-cover"
-                src={`/UserImages/${formUser.userImage}`}
+                src={`/UserImages/${formUser.userimage}`}
                 alt="Uploaded"
               />
             )}
           </div>
         </div>
 
-        {/* Bureau de vote (only visible if role is "scrutateur") */}
+        {/* Bureau de vote (only visible if role is "scrutateur") 
         {role === "SCRUTATEUR" && (
           <div className="mb-4">
             <label
@@ -392,7 +599,7 @@ const CreateUsers = () => {
         ))}
       </select>
           </div>
-        )}
+        )}  */}
 
 
         {/* Partie Politiques (only visible if role is "candidat") */} 
@@ -419,10 +626,189 @@ const CreateUsers = () => {
                   </div>
                 </div>
 
+                {(role === "SCRUTATEUR" || role === "ELECTEUR") && (
+  <div>
+    <p className="text-lg font-semibold mb-4">Filtrer les bureau par :</p>
+    <div className="grid grid-cols-4 mdn:grid-cols-1 gap-4">
+      
+      {/* Region */}
+      <div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1" htmlFor="bureau">
+            Region
+          </label>
+          <select
+            id="region_id"
+            name="region_id"
+            value={filters.region_id}
+            onChange={handleFilterChange}
+            className="w-full p-2 border border-gray-300 rounded shadow-sm"
+          >
+            <option value="">Tous</option>
+            {regions.map((region) => (
+              <option key={region.id} value={region.id}>
+                {region.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Departement */}
+      <div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1" htmlFor="bureau">
+            Departement
+          </label>
+          <select
+            id="departement_id"
+            name="departement_id"
+            value={filters.departement_id}
+            onChange={handleFilterChange}
+            className="w-full p-2 border border-gray-300 rounded shadow-sm"
+          >
+            <option value="">Tous</option>
+            {departments.map((department) => (
+              <option key={department.id} value={department.id}>
+                {department.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Arrondissement */}
+      <div>
+        <label className="block text-gray-700 mb-1">Arrondissement:</label>
+        <input
+          type="text"
+          id="arrondissementNameinput"
+          name="arrondissement_name"
+          placeholder="Nom de l'arrondissement"
+          value={filters.arrondissement_name}
+          onChange={handleFilterChange}
+          className="w-full p-2 border border-gray-300 rounded shadow-sm"
+        />
+      </div>
+
+      {/* Centre-de-vote */}
+      <div>
+        <label className="block text-gray-700 mb-1">Centre:</label>
+        <input
+          type="text"
+          id="centerNameinput"
+          name="center_name"
+          placeholder="Nom du centre"
+          value={filters.center_name}
+          onChange={handleFilterChange}
+          className="w-full p-2 border border-gray-300 rounded shadow-sm"
+        />
+      </div>
+    </div>
+
+    {/* Entrer des valeurs du bureau */}
+    <div className="mt-4">
+      <VotingOfficeSelect
+        votingOffices={votingOffices}
+        onChange={handleOfficeChange}
+        value={selectedVotingOffice}
+      />
+    </div>
+  </div>
+)}
+
+
+{(role === "ENROLEUR") && (
+  <div>
+    <p className="text-lg font-semibold mb-4">Filtrer les centres de vote par :</p>
+    <div className="grid grid-cols-4 mdn:grid-cols-1 gap-4">
+      
+      {/* Region */}
+      <div>
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="region_id">
+            Région
+          </label>
+          <select
+            id="region_id"
+            name="region_id"
+            value={filterscenter.region_id}
+            onChange={handlecenterFilterChange}
+            className="w-full p-2 border border-gray-300 rounded shadow-sm focus:ring focus:ring-blue-200"
+          >
+            <option value="">Tous</option>
+            {regions.map((region) => (
+              <option key={region.id} value={region.id}>
+                {region.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Departement */}
+      <div>
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="departement_id">
+            Département
+          </label>
+          <select
+            id="departement_id"
+            name="departement_id"
+            value={filterscenter.departement_id}
+            onChange={handlecenterFilterChange}
+            className="w-full p-2 border border-gray-300 rounded shadow-sm focus:ring focus:ring-blue-200"
+          >
+            <option value="">Tous</option>
+            {departments.map((department) => (
+              <option key={department.id} value={department.id}>
+                {department.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Arrondissement */}
+      <div>
+        <label className="block text-gray-700 font-medium mb-2" htmlFor="arrondissementNameinput">
+          Arrondissement
+        </label>
+        <input
+          type="text"
+          id="arrondissementNameinput"
+          name="arrondissement_name"
+          placeholder="Nom de l'arrondissement"
+          value={filterscenter.arrondissement_name}
+          onChange={handlecenterFilterChange}
+          className="w-full p-2 border border-gray-300 rounded shadow-sm focus:ring focus:ring-blue-200"
+        />
+      </div>
+    </div>
+
+    {/* Entrer des valeurs du bureau */}
+    <div className="mt-4">
+      <VotingCenterSelect
+        votingCenters={votingCenters}
+        onChange={handleCenterChange}
+        value={selectedVotingCenter}
+      />
+    </div>
+  </div>
+)}
+
+             
+      
+
+
+
+
     {/* Submit Button */}
+
+
     <button
       type="submit"
-      className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+      className="w-full bg-blue-500 text-white py-2 my-4 px-4 rounded hover:bg-blue-600"
     >
       Soumettre
     </button>
