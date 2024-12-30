@@ -4,6 +4,7 @@ import "./NewResult.scss"
 import React, { useEffect, useState } from 'react';
 import ApiService, { fetchCandidats, fetchResultatsPourBureauDeVote } from '../../components/services/ApiServices';
 import { User } from "@/app/Models/User";
+import FileUploader from "@/app/components/FileUploader/FileUploader";
 
 interface Candidat {
   id: number;
@@ -21,6 +22,10 @@ const CreateResultatForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [pv, setPv] = useState<File | null>(null);
+  const [pvUploadSuccess, setPvUploadSuccess] = useState<string | null>(null);
+  const [pvUploadError, setPvUploadError] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const loadCandidatsAndVoix = async () => {
@@ -84,12 +89,58 @@ const CreateResultatForm = () => {
         console.log("Réponse backend:", response);
       }
     } catch (err: any) {
+      if (err.response && err.response.status === 400) {
+        // Si le serveur retourne un statut 400 (HTTP_BAD_REQUEST)
+        console.error("Erreur backend (dépassement de voix) :", err.response.data);
+      } else {
+        console.error("Erreur générale :", err);
+      }
       setError('Une erreur s\'est produite.');
-      console.error("Erreur:", err);
     } finally {
       setLoading(false);
     }
   };
+  const uploadPv = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`http://localhost:8000/circonscription/upload_pv/${Number(user?.bureau_de_vote)}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+        },
+      });
+
+      return response
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('File upload failed');
+      return null;
+    }
+  };
+  /*const handlePvUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPvUploadError(null);
+    setPvUploadSuccess(null);
+
+    if (!pv) {
+      setPvUploadError("Veuillez sélectionner un fichier.");
+      return;
+    }
+
+    try {
+      if (user?.bureau_de_vote) {
+        const response = await uploadPv(pv);
+        setPvUploadSuccess("Procès-verbal téléchargé avec succès!");
+        console.log("Réponse backend PV:", response);
+      }
+    } catch (err: any) {
+      setPvUploadError("Une erreur s'est produite lors de l'upload du PV.");
+      console.error("Erreur PV:", err);
+    }
+  };*/
+  
 
   return (
     <div className="new-result">
@@ -120,6 +171,16 @@ const CreateResultatForm = () => {
         </div>
         <button className="submit-result" type="submit" disabled={loading}>Submit results</button>
       </form>
+      <FileUploader uploadUrl={`http://localhost:8000/circonscription/upload_pv/${Number(user?.bureau_de_vote)}/`} />;
+      {/* <form onSubmit={handlePvUpload} className="pv-upload-form">
+        <h2>Upload procès-verbal</h2>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) =>{setPv(e.target.files?.[0] || null)} }
+        />
+        <button type="submit">Upload PV</button>
+      </form> */}
 
       {loading && <p>Chargement...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}

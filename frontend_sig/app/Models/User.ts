@@ -6,6 +6,7 @@ export interface User {
     political_party?: string | null; // Nullable and optional
     tel: string;
     email: string;
+    userImage?:string;
     password?: string | null; // Nullable and optional
     birthdate: string; // Using string for date to handle ISO format
     role: string; // Adjust based on the UserRole enum choices

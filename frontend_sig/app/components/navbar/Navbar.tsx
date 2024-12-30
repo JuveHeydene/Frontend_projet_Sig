@@ -6,11 +6,14 @@ import { usePathname } from 'next/navigation';
 
 import { useRouter } from "next/navigation";
 import myLogo from "../../../public/Images/elections_237.png"
+import { User } from '@/app/Models/User';
 
+const BASE_IMG_URL="http://127.0.0.1:8000/media/042246ac-2bf1-421e-bae0-f59fc0bdc3af-Zen'itsu%20PP.jpg"
 
 const Navbar = () => {
   const pathname = usePathname();
   const [navTitle, setNavTitle] = useState<string>("")
+  const [user, setUser]= useState<User|null>(null)
   
   useEffect(() => {
     const updateNavTitle = ()=>{
@@ -46,6 +49,16 @@ const Navbar = () => {
       }
     }
     setNavTitle(updateNavTitle())
+  }, []);
+  
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      console.log(JSON.parse(storedUser))
+      setUser(JSON.parse(storedUser))
+      
+    }
+    
   }, []);
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
       const dropdownRef = useRef<HTMLDivElement | null>(null);
