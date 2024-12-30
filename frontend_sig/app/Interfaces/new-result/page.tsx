@@ -171,7 +171,7 @@ const CreateResultatForm = () => {
         </div>
         <button className="submit-result" type="submit" disabled={loading}>Submit results</button>
       </form>
-      <FileUploader uploadUrl={`http://localhost:8000/circonscription/upload_pv/${Number(user?.bureau_de_vote)}/`} />;
+      <FileUploader uploadUrl={`http://localhost:8000/circonscription/upload_pv/${Number(user?.bureau_de_vote)}/`} />
       {/* <form onSubmit={handlePvUpload} className="pv-upload-form">
         <h2>Upload procès-verbal</h2>
         <input
