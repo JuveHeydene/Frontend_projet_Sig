@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {User} from '@/app/Interfaces/create-user/page'
 const API_BASE_URL = 'http://localhost:8000'; // Base URL du backend
 
 const api = axios.create({
@@ -88,6 +89,21 @@ export const fetchAllVotingCenters = async()=>{
 
 }
 
+//Récupérer tous les centres de votes 
+export const fetchAllVotingOffices = async()=>{
+  try{
+    const response = await axios.get(`${API_BASE_URL}/circonscription/get_voting_office_as_list_options`)
+    console.log(response.data)
+    return await response.data
+  }
+  catch(error){
+    console.error("Erreur lors de la récupération des centres de votes :", error);
+    throw error;
+  }
+
+}
+
+
 export const create_new_voting_office = async(data:any)=>{
   try{
     const response = await api.post(`${API_BASE_URL}/circonscription/create_new_voting_office/`,
@@ -135,6 +151,9 @@ const fetchVotingCenters = async (filters:any) => {
     console.error('Erreur lors du chargement des centres de vote:', error);
   }
 };
+
+
+
 const fetchVotingOffice = async (filters:any) => {
   try {
     const response = await api.get(`${API_BASE_URL}/circonscription/voting_office_list/`, {
@@ -150,6 +169,65 @@ const fetchVotingOffice = async (filters:any) => {
     console.error('Erreur lors du chargement des centres de vote:', error);
   }
 };
+
+const fetchVotingOfficelabelvalue = async (filters:any) => {
+  try {
+    const response = await api.get(`${API_BASE_URL}/circonscription/voting_office_listvaluelable/`, {
+      params: {
+        center_name: filters.center_name,
+        arrondissement_name: filters.arrondissement_name,
+        region_id: filters.region_id,
+        departement_id: filters.departement_id,
+      },
+    });
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors du chargement des centres de vote:', error);
+  }
+};
+
+const fetchVotingCenterslabelvalue = async (filterscenter:any) => {
+  try {
+    const response = await api.get(`${API_BASE_URL}/circonscription/voting_center_listvaluelable/`, {
+      params: {
+        center_name: filterscenter.center_name,
+        arrondissement_name: filterscenter.arrondissement_name,
+        region_id: filterscenter.region_id,
+        departement_id: filterscenter.departement_id,
+      },
+    });
+    return response.data
+  } catch (error) {
+    console.error('Erreur lors du chargement des centres de vote:', error);
+  }
+};
+
+const fetchUsersfiltered = async (filters: any) => {
+  try {
+    console.log("filterred ready to be sent ",filters)
+    const response = await api.get(`${API_BASE_URL}/users/getfilteredusers/`, {
+      params: {
+        name: filters.name,
+        role: filters.role,
+        gender: filters.gender,
+        age: filters.age,
+        ageFilter: filters.ageFilter,
+        region_id: filters.region_id,
+        departement_id: filters.departement_id,
+        arrondissement: filters.arrondissement,
+        bureau: filters.bureau,
+        centre: filters.centre,
+        alphabetical: filters.Alphabetical, // Adjust casing if needed
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors du chargement des utilisateurs:', error);
+    throw error; // Re-throw error if you need to handle it elsewhere
+  }
+};
+
 const updateVotingCenter = async (id: number, data: { center_name: string; arrondissement_name: string }) => {
   try {
     const response = await api.put(`/circonscription/voting-centers/${id}/update/`, data);
@@ -168,6 +246,7 @@ const deleteVotingCenter = async (id: number) => {
     throw error;
   }
 };
+
 const updateVotingOffice = async (id: number, data: { office_name: string; center_name: string }) => {
   try {
     const response = await api.put(`/circonscription/voting-office/${id}/update/`, data);
@@ -177,6 +256,17 @@ const updateVotingOffice = async (id: number, data: { office_name: string; cente
     throw error;
   }
 };
+
+const updateuser = async (id: number, data:User ) => {
+  try {
+    const response = await api.patch(`/users/${id}/update/`, data);
+    return response.data; // Retourne la réponse du backend après la mise à jour
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du centre de vote:", error);
+    throw error;
+  }
+};
+
 const deleteVotingOffice = async (id: number) => {
   try {
     const response = await api.delete(`/circonscription/voting-office/${id}/delete/`);
@@ -208,5 +298,12 @@ export default {
   updateVotingOffice,
   deleteVotingOffice,
   fetchAllArrondissments,
-  fetchVotingOffice
+  fetchAllVotingOffices,
+  fetchVotingOffice,
+  fetchVotingOfficelabelvalue,
+  fetchVotingCenterslabelvalue,
+  fetchUsersfiltered,
+  updateuser,
+  
+ 
 };

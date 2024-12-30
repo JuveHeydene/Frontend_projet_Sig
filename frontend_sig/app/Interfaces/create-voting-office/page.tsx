@@ -42,6 +42,7 @@ const CreateVotingOffice = () => {
     };
     loadVotingCentersAsOptions();
   }, []);
+  
   const handleCenterChange = (
     selectedOption: { label: string; value: string } | null
   ) => {
@@ -51,6 +52,7 @@ const CreateVotingOffice = () => {
       votingCenterName: selectedOption?.value,
     });
   };
+
   const handleSubmitcreatebureauvote = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {

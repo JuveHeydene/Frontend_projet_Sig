@@ -15,6 +15,21 @@ export interface User {
     is_active: true;
     is_staff: false;
   }
+export interface Usermodif {
+  name: string;
+  surname: string;
+  email:string;
+  birthdate: string;
+  political_party: string|undefined;
+  tel: string;
+  password: string;
+  gender: string;
+  role: string;
+  bureau_de_vote_name: string|undefined|null;
+  centre_de_vote_name: string|undefined|null;
+  userimage:string;
+}
+
 export interface VotingCenter {
     label: string;
     value: string;
@@ -22,4 +37,9 @@ export interface VotingCenter {
 export interface ArrondissmentOptions{
   label: string;
     value: string;
+}
+
+export interface VotingOffice {
+  label: string;
+  value: string;
 }
