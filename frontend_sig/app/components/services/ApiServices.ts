@@ -316,7 +316,6 @@ export default {
   fetchVotingOffice,
   upload_pv,
   fetchAllVotingOffices,
-  fetchVotingOffice,
   fetchVotingOfficelabelvalue,
   fetchVotingCenterslabelvalue,
   fetchUsersfiltered,
