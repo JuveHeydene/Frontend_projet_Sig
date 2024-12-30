@@ -314,7 +314,7 @@ export default {
   deleteVotingOffice,
   fetchAllArrondissments,
   fetchVotingOffice,
-  upload_pv
+  upload_pv,
   fetchAllVotingOffices,
   fetchVotingOffice,
   fetchVotingOfficelabelvalue,
