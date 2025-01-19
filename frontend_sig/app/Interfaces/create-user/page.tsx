@@ -129,8 +129,9 @@ const CreateUsers = () => {
       setFormUser(infomodif);
       setRole(infomodif.role)
       setusertoedit(infomodif.id)
-      setIsEditMode(true);
       setSelectedVotingCenter(infomodif.centre_de_vote_name)
+      setIsEditMode(true);
+      
     }
   }, [modification_info]);
 
