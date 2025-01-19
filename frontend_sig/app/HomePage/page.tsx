@@ -7,9 +7,41 @@ import Link from "next/link";
 import { MyPieChart } from "../components/PieChart/PieChart";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import LineChartComponent from "../components/MyLineChart/MyLineChart";
-
+import MapComponent from "../components/MapComponent/MapComponent";
+import ApiServices from "../components/services/ApiServices";
+const colorList = [
+  "#4AB48F", // Couleur 1
+  "#EDA145", // Couleur 2
+  "#EA191D", // Couleur 3
+  "#1A9EE1", // Couleur 4
+  "#51c992", // Couleur 5
+];
 
 const page = () => {
+  const [totalVotesCandidate, setTotalVotesCandidate] = React.useState<any>([]);
+  const [electionSummary, setElectionSummary] = React.useState<any>({});
+  React.useEffect(() => {
+    const fetchResultaVoteByCandidat = async () => {
+      try {
+        const data = await ApiServices.getTotalVotes(); // Récupère les résultats de l'API
+        const sumaryData = await ApiServices.election_summary();
+        setElectionSummary(sumaryData.data)
+        console.log("Summary data : ", sumaryData.data)
+        
+        // Attribution des couleurs et préparation des données pour le graphique
+        const resultsWithColors = data.map((candidate: any, index: number) => ({
+          name: candidate.candidateName, // Nom du candidat
+          votes: candidate.totalVotes, // Total des votes
+          fill: colorList[index], // Couleur associée
+        }));
+        setTotalVotesCandidate(resultsWithColors); // Met à jour les données du graphique
+        
+      } catch (error) {
+        console.error("Erreur lors de la récupération des résultats :", error);
+      }
+    };
+    fetchResultaVoteByCandidat();
+  }, []);
   return (
     <div className="home">
       <style>
@@ -38,20 +70,20 @@ const page = () => {
         </ul>
       </nav>
       <main>
-        <div className="key-stats">
+         <div className="key-stats">
           <div className="label-stat">
             <span>Total de voix enregistrées :</span>
-            <span>12053875</span>
+            <span>{electionSummary.total_votes}</span>
           </div>
           <div className="label-stat">
             <span>Taux de participation globale :</span>
-            <span>75.34%</span>
+            <span>{electionSummary.participation_rate}%</span>
           </div>
           <div className="label-stat">
             <span>Candidat en tête à l'échelle nationale:</span>
-            <span>Candidat-A, RAPC</span>
+            <span>{electionSummary.leading_candidate?.name}, {electionSummary.leading_candidate?.political_party}</span>
           </div>
-        </div>
+        </div> 
         <section className="statistics">
           <div className="pie-chart">
             <h1 style={{ color: "#1A9EE1", padding: "20px 0px" }}>
@@ -59,42 +91,17 @@ const page = () => {
               <br /> des Votes par Candidat
             </h1>
             <ul className="candidates">
-              <li>
-                <span
-                  className="color"
-                  style={{ background: "#ea191d" }}
-                ></span>
-                <span className="name" style={{ color: "#ea191d" }}>
-                  Candidat-A
-                </span>
-              </li>
-              <li>
-                <span
-                  className="color"
-                  style={{ background: "#1A9EE1" }}
-                ></span>
-                <span className="name" style={{ color: "#1A9EE1" }}>
-                  Candidat-B
-                </span>
-              </li>
-              <li>
-                <span
-                  className="color"
-                  style={{ background: "#4AB47B" }}
-                ></span>
-                <span className="name" style={{ color: "#4AB47B" }}>
-                  Candidat-C
-                </span>
-              </li>
-              <li>
-                <span
-                  className="color"
-                  style={{ background: "#EDA145" }}
-                ></span>
-                <span className="name" style={{ color: "#EDA145" }}>
-                  Candidat-D
-                </span>
-              </li>
+              {totalVotesCandidate.map((candidate: any, index: number) => (
+                <li key={index}>
+                  <span
+                    className="color"
+                    style={{ background: candidate.fill }}
+                  ></span>
+                  <span className="name" style={{ color: candidate.fill }}>
+                    {candidate.name}
+                  </span>
+                </li>
+              ))}
             </ul>
             <div className="chart">
               <MyPieChart />
@@ -104,14 +111,14 @@ const page = () => {
             <h1 style={{ color: "#1A9EE1", padding: "20px 0px" }}>
               Evolution en Temps Réel des Votes par Candidat
             </h1>
-              <LineChartComponent/>
+            <LineChartComponent />
           </div>
         </section>
-        <section className="Map">b</section>
-
-        <section className="table">
-          
+        <section className="Map">
+          <MapComponent />
         </section>
+
+        <section className="table"></section>
       </main>
     </div>
     // <><ElectionHomePage/></>

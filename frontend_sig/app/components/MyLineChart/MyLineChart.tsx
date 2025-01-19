@@ -12,6 +12,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+const colorList = [
+  "#4AB48F", // Couleur 1
+  "#EDA145", // Couleur 2
+  "#EA191D", // Couleur 3
+  "#1A9EE1", // Couleur 4
+  "#51c992", // Couleur 5
+]
 
 // Données représentant l'évolution des votes toutes les 30 minutes
 const voteData = [
@@ -70,38 +77,57 @@ interface ResultData {
   total_votes: number;
   time: string;
 }
+interface FormattedResult {
+  time: string; // Nom du candidat
+  [key: string]: number | string; // Valeurs dynamiques pour chaque candidat
+}
 const LineChartComponent = () => {
   const [data, setData] = useState<ResultData[]>([]);
-  useEffect(() => {
-    // Fetch existing results
-    fetch('http://localhost:8000/users/get_existing_results/')
-    .then((response) => response.json())
-    .then((fetchedData: ResultData[]) => setData(fetchedData))
-    .catch((error) => console.error('Error fetching existing results:', error));
+  const [formattedData, setFormattedData] = useState<any[]>([]);
 
-    // Setup WebSocket connection
-    const socket = new WebSocket('ws://localhost:8000/ws/vote-results/');
-    
-    socket.onmessage = (event) => {
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8000/ws/vote-results/");
+
+    ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log('message : ', message)
-      if (message.type === 'existing') {
-        setData(message.data); // Assurez-vous que message.data est un tableau de ResultData
-      } else if (message.type === 'new') {
-        setData((prevData) => [...prevData, message.data]); // Assurez-vous que message.data est de type ResultData
+      console.log("Message :", message)
+      if (message.type === "existing") {
+        setData(message.data);
+      } else if (message.type === "update") {
+        setData((prevData) => [...prevData, ...message.data]);
       }
     };
 
-
     return () => {
-      socket.close();
-    };}, []);
+      ws.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Transformer les données pour Recharts
+    const candidats = Array.from(new Set(data.map((result) => result.candidat)));
+    const times = Array.from(new Set(data.map((result) => result.time)));
+
+    const chartData = times.map((time) => {
+      const row: Record<string, any> = { time };
+      candidats.forEach((candidat) => {
+        const result = data.find(
+          (res) => res.candidat === candidat && res.time === time
+        );
+        row[candidat] = result ? result.total_votes : 0;
+      });
+      return row;
+    });
+
+    setFormattedData(chartData);
+  }, [data]);
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
         width={500}
         height={500}
-        data={voteData}
+        data={formattedData}
         margin={{
           top: 20,
           right: 30,
@@ -110,15 +136,21 @@ const LineChartComponent = () => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="time" label={{ value: 'Heure', position: 'insideBottom', offset: -10 }} />
-        <YAxis label={{ value: 'Votes', angle: -90, position: 'insideLeft' }} />
+        <XAxis dataKey="time" label={{ value: "Heure", position: "insideBottom", offset: -5 }} />
+        <YAxis label={{ value: "Nombre de Votes", angle: -90, position: "insideLeft" }} />
         <Tooltip />
         <Legend />
         {/* Lignes pour chaque candidat */}
-        <Line type="monotone" dataKey="Candidat-A" stroke="#3b82f6" />
-        <Line type="monotone" dataKey="Candidat-B" stroke="#ef4444" />
-        <Line type="monotone" dataKey="Candidat-C" stroke="#22c55e" />
-        <Line type="monotone" dataKey="Candidat-D" stroke="#8b5cf6" />
+        {Array.from(new Set(data.map((result) => result.candidat))).map((candidat, index) => (
+            <Line
+              key={candidat}
+              type="monotone"
+              dataKey={candidat}
+              stroke={colorList[index]}
+              strokeWidth={2}
+              activeDot={{ r: 8 }}
+            />
+          ))}
       </LineChart>
     </ResponsiveContainer>
   );

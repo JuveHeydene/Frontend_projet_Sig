@@ -1,8 +1,17 @@
-import React from "react"
+import React from "react";
 
-export function CustomTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
+export function CustomTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: any[];
+}) {
   if (active && payload && payload.length) {
     const data = payload[0].payload; // Les données associées à la section survolée
+    const totalVotes = payload[0].payload.totalVotes; // Le total global de votes passé dans les données
+    const percentage = ((data.votes / totalVotes) * 100).toFixed(2); // Calcul du pourcentage
+
     return (
       <div
         style={{
@@ -18,10 +27,8 @@ export function CustomTooltip({ active, payload }: { active?: boolean; payload?:
           <strong>Votes :</strong> {data.votes}
         </p>
         <p style={{ margin: "4px 0", fontSize: "12px" }}>
-          <strong>Pourcentage :</strong>{" "}
-          {((data.votes / payload[0].payload.total) * 100).toFixed(2)}%
+          <strong>Pourcentage :</strong> {percentage}%
         </p>
-        {/* Ajoutez d'autres informations ici */}
       </div>
     );
   }
