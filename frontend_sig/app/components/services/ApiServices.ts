@@ -23,20 +23,63 @@ api.interceptors.request.use(
   }
 );
 
+export const getRegionStatistics = async (regionName: string) => {
+  try {
+    const response = await api.get(`/users/region_statistics/${regionName}/`);
+    return response.data; // Expected response: region statistics
+  } catch (error) {
+    console.error('Error fetching region statistics:', error);
+    throw error;
+  }
+};
+export const getDepartementStatistics = async (departementName: string) => {
+  try {
+    const response = await api.get(`/users/departement_statistics/${departementName}/`);
+    return response.data; // Expected response: department statistics
+  } catch (error) {
+    console.error('Error fetching department statistics:', error);
+    throw error;
+  }
+};
+export const getArrondissementStatistics = async (arrondissementName: string) => {
+  try {
+    const response = await api.get(`/users/arrondissement_statistics/${arrondissementName}/`);
+    return response.data; // Expected response: arrondissement statistics
+  } catch (error) {
+    console.error('Error fetching arrondissement statistics:', error);
+    throw error;
+  }
+};
 
 export const fetchCandidats = async () => {
-    const token = localStorage.getItem('token'); // Récupérer le token
-    const headers = {
-        Authorization: `Bearer ${token}`,
-    };
-
     try {
-        const response = await axios.get(`${API_BASE_URL}/users/candidats/`, { headers });
+        const response = await axios.get(`${API_BASE_URL}/users/candidats/`);
         return response.data;
     } catch (error) {
         console.error("Erreur lors de la récupération des candidats :", error);
         throw error;
     }
+};
+const election_summary = async()=>{
+  try {
+    const response = await api.get(`/users/election-summary/`);
+    return response
+  } catch (error) {
+    console.error("Erreur lors de la récupération des candidats :", error);
+    throw error;
+  }
+  
+}
+const getTotalVotes = async () => {
+  try {
+      const response = await fetch('http://127.0.0.1:8000/users/total_votes_per_candidate/');
+      const data = await response.json();
+
+      return data;
+
+  } catch (error) {
+      console.error('Error fetching vote results:', error);
+  }
 };
 
 // Fonction pour créer plusieurs résultats de vote
@@ -301,7 +344,9 @@ const upload_pv = async (bureau_id:number, formData:any)=>{
   }
 }
 
+
 export default {
+  election_summary,
   createResultatDeVote,
   fetchResultatsPourBureauDeVote,
   create_new_voting_office,
@@ -320,6 +365,9 @@ export default {
   fetchVotingCenterslabelvalue,
   fetchUsersfiltered,
   updateuser,
-  
+  getTotalVotes,
+  getRegionStatistics,
+  getArrondissementStatistics,
+  getDepartementStatistics
  
 };
