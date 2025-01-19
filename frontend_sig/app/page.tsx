@@ -1,12 +1,13 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import LoginPage from "./Interfaces/Login/page";
+import ElectionHomePage from "./components/Home/Home";
+
 
 
 export default function Home() {
   return (
     <div>
-    <LoginPage/>
+    <ElectionHomePage/>
     </div>
   );
 }

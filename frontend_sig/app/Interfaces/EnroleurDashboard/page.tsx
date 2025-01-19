@@ -2,6 +2,7 @@
 import react from "react"
 import { useState,useEffect } from "react"
 import Image from "next/image"
+import withAuth from '@/app/components/withAuths/page';
 
 interface userinfo {
   selectedCandidate: string;
@@ -12,7 +13,7 @@ interface userinfo {
 
 
 
-const Ebroleurpage = () => {
+const Enroleurpage = () => {
 
   const [candidates] = useState([
     "Candidat A",
@@ -280,4 +281,5 @@ const Ebroleurpage = () => {
   );
 };
 
-export default Ebroleurpage;
+
+export default withAuth(Enroleurpage, ['ENROLLEUR']);
