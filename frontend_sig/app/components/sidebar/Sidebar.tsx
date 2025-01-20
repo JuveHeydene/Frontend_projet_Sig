@@ -54,7 +54,7 @@ const Sidebar = () => {
               icon: "dashboard",
               label: "Dashboard",
               children: null,
-              url: "/dashboard",
+              url: "/Interfaces/dashboard",
             },
             {
               id: "users",
@@ -173,7 +173,7 @@ const Sidebar = () => {
               icon: "dashboard",
               label: "Dashboard",
               children: null,
-              url: "#",
+              url: "/Interfaces/dashboard",
             },
             {
               id: "users",
@@ -226,7 +226,7 @@ const Sidebar = () => {
               icon: "dashboard",
               label: "Dashboard",
               children: null,
-              url: "/dashboard",
+              url: "/Interfaces/dashboard",
             },
             {
               id: "voting-results",
@@ -279,7 +279,7 @@ const Sidebar = () => {
               icon: "dashboard",
               label: "Dashboard",
               children: null,
-              url: "/dashboard",
+              url: "/Interfaces/dashboard",
             },
             {
               id: "users",

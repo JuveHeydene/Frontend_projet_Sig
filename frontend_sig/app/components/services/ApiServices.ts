@@ -60,6 +60,43 @@ export const fetchCandidats = async () => {
         throw error;
     }
 };
+const downloadCSV = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/circonscription/export/csv/bureaux/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'text/csv',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Récupérer le blob des données
+    const blob = await response.blob();
+
+    // Créer une URL temporaire pour le téléchargement
+    const url = window.URL.createObjectURL(blob);
+
+    // Créer un élément <a> pour le téléchargement
+    const link = document.createElement('a');
+    link.href = url;
+
+    // Nom du fichier téléchargé
+    link.download = 'bureaux_de_vote.csv';
+
+    // Ajouter et cliquer sur le lien
+    document.body.appendChild(link);
+    link.click();
+
+    // Nettoyer
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Erreur lors du téléchargement du fichier CSV:', error);
+  }
+};
 const election_summary = async()=>{
   try {
     const response = await api.get(`/users/election-summary/`);

@@ -137,7 +137,45 @@ const VotingOffices: React.FC = () => {
       console.error("Erreur lors de la suppression du centre de vote:", error);
     }
   };
-
+  
+    const downloadCSV = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/circonscription/export/csv/bureaux/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'text/csv',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        // Récupérer le blob des données
+        const blob = await response.blob();
+  
+        // Créer une URL temporaire pour le téléchargement
+        const url = window.URL.createObjectURL(blob);
+  
+        // Créer un élément <a> pour le téléchargement
+        const link = document.createElement('a');
+        link.href = url;
+  
+        // Nom du fichier téléchargé
+        link.download = 'bureaux_de_vote.csv';
+  
+        // Ajouter et cliquer sur le lien
+        document.body.appendChild(link);
+        link.click();
+  
+        // Nettoyer
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Erreur lors du téléchargement du fichier CSV:', error);
+      }
+    };
+  
   return (
     <div className="voting-centers">
       <h1>Bureaux de Vote</h1>
@@ -237,6 +275,14 @@ const VotingOffices: React.FC = () => {
           ))}
         </tbody>
       </table>
+      <div>
+      <button
+      onClick={downloadCSV}
+      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+    >
+      Télécharger le fichier CSV
+    </button>
+      </div>
 
       {/* Pagination */}
       <div className="pagination">

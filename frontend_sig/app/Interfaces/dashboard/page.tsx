@@ -18,6 +18,7 @@ const page = () => {
         fetchAllRegion()
         
     }, []);
+    
   return (
     <div className='dashboard'>
         {
@@ -27,6 +28,8 @@ const page = () => {
                 </div>
             ))
         }
+        
+
     </div>
   )
 }
