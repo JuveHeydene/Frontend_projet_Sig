@@ -368,6 +368,6 @@ export default {
   getTotalVotes,
   getRegionStatistics,
   getArrondissementStatistics,
-  getDepartementStatistics
- 
+  getDepartementStatistics,
+  fetchCandidats
 };

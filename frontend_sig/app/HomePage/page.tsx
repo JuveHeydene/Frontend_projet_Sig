@@ -9,6 +9,7 @@ import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import LineChartComponent from "../components/MyLineChart/MyLineChart";
 import MapComponent from "../components/MapComponent/MapComponent";
 import ApiServices from "../components/services/ApiServices";
+import  noimage from "@/app/noimage.png"
 const colorList = [
   "#4AB48F", // Couleur 1
   "#EDA145", // Couleur 2
@@ -17,14 +18,18 @@ const colorList = [
   "#51c992", // Couleur 5
 ];
 
-const page = () => {
+const HomePage = () => {
   const [totalVotesCandidate, setTotalVotesCandidate] = React.useState<any>([]);
   const [electionSummary, setElectionSummary] = React.useState<any>({});
+  const [candidatesWithPhotos, setCandidatesWithPhotos] = React.useState<any>([]);
   React.useEffect(() => {
     const fetchResultaVoteByCandidat = async () => {
       try {
         const data = await ApiServices.getTotalVotes(); // Récupère les résultats de l'API
         const sumaryData = await ApiServices.election_summary();
+        const candidatesData = await ApiServices.fetchCandidats();
+        console.log("candidates data :", candidatesData)
+        setCandidatesWithPhotos(candidatesData);
         setElectionSummary(sumaryData.data)
         console.log("Summary data : ", sumaryData.data)
         
@@ -42,6 +47,34 @@ const page = () => {
     };
     fetchResultaVoteByCandidat();
   }, []);
+  React.useEffect(() => {
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/vote-results/");
+  
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+  
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      
+      if (data.type ==='election_summary_update') {
+        console.log("Data received from WebSocket:", data.data.data);
+        setElectionSummary(data.data.data)
+      }
+    };
+  
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+  
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+    return () => {
+      socket.close()
+    }
+    
+  }, []);
   return (
     <div className="home">
       <style>
@@ -53,9 +86,9 @@ const page = () => {
         <h1>Presidential Elections 2024</h1>
         <ul className="nav-items">
           <li>
-            <Link href={""}>
+            <a href="/Login">
               <span>Login</span>{" "}
-            </Link>
+            </a>
           </li>
           <li>
             <Link href={""}>
@@ -70,7 +103,30 @@ const page = () => {
         </ul>
       </nav>
       <main>
-         <div className="key-stats">
+        <div className="candidatesWithPic">
+        {candidatesWithPhotos.map((candidate:any) => (
+            <div className="candidate-card" key={candidate.id}>
+            {candidate.userImage && <img
+                  src={`/UserImages/${candidate.userImage}`}
+                  alt={candidate.name}
+                  width={80}
+                  height={80}
+                  className="rounded-full"
+                />}
+
+                {(candidate.userImage===null || candidate.userImage==="") && <Image
+                  src={noimage}
+                  alt={candidate.name}
+                  width={80}
+                  height={80}
+                  className="rounded-full"
+                />}
+            <span>{candidate.name},{candidate.political_party}</span>
+          </div>
+          ))}
+          
+        </div>
+        <div className="key-stats">
           <div className="label-stat">
             <span>Total de voix enregistrées :</span>
             <span>{electionSummary.total_votes}</span>
@@ -125,4 +181,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default HomePage;

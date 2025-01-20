@@ -31,4 +31,4 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
   );
 };
 
-export default withAuth(Layout, ["SCRUTATEUR", "SUPERVISEUR", "ENROLLEUR", "ADMINISTRATEUR"]);;
+export default withAuth(Layout, ["SCRUTATEUR", "SUPERVISEUR", "ENROLEUR", "ADMINISTRATEUR"]);;

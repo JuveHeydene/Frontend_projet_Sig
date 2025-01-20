@@ -190,6 +190,7 @@ const MapComponent: React.FC = () => {
         const departementData = await departmentResponse.json();
         const arrondissmentResponse = await fetch("http://127.0.0.1:8000/users/get_winner_by_arrondissement/");
         const arrondissmentData = await arrondissmentResponse.json();
+        console.log("Region winners :", regiondata)
         setRegionWinners(regiondata);
         setDepartmentWinners(departementData);
         
@@ -210,12 +211,13 @@ const MapComponent: React.FC = () => {
   
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+    if(data.type === 'winner_update' ){
       console.log("Data received from WebSocket:", data);
       console.log(data.data)
       setRegionWinners(data.data[0].winners)
       setDepartmentWinners(data.data[1].winners)
       setArrondissmentWinners(data.data[2].winners)
-    };
+    };}
   
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
@@ -224,7 +226,9 @@ const MapComponent: React.FC = () => {
     socket.onclose = () => {
       console.log("WebSocket connection closed");
     };
-  
+    return () => {
+      socket.close()
+    }
     
   }, []);
   const ZoomHandler = () => {
@@ -285,16 +289,19 @@ const MapComponent: React.FC = () => {
     // Convertir regionName en majuscules
     const normalizedRegionName = regionName.toUpperCase();
   
-    // Récupérer le gagnant pour la région
-    const winner = regionWinners[normalizedRegionName];
+    if (regionWinners) {
+      // Récupérer le gagnant pour la région
+      const winner = regionWinners[normalizedRegionName];
   
-    if (winner) {
-      // Trouver le candidat correspondant à l'id dans l'array candidates
-      const candidate = candidates.find((c:any) => c.id === winner.candidat_id);
-  
-      // Retourner la couleur du candidat ou une couleur par défaut si non trouvé
-      return candidate ? candidate.color : "#CCCCCC";
+      if (winner) {
+        // Trouver le candidat correspondant à l'id dans l'array candidates
+        const candidate = candidates.find((c:any) => c.id === winner.candidat_id);
+    
+        // Retourner la couleur du candidat ou une couleur par défaut si non trouvé
+        return candidate ? candidate.color : "#CCCCCC";
+      }
     }
+    
   
     // Couleur par défaut si aucune donnée
     return "#CCCCCC";
@@ -374,46 +381,48 @@ const MapComponent: React.FC = () => {
     console.log("Layer :", layer);
   
     const key = feature.properties.name_1.toUpperCase();
-  
-    if (regionWinners[key]) {
-      const regionStatistics = await ApiServices.getRegionStatistics(key);
-      console.log("Region stats: ", regionStatistics);
-  
-      const winner = regionWinners[key]?.candidat_name || "N/A";
-      const totalVotesWinner = regionWinners[key]?.total_votes || 0;
-      const totalEnrollees = regionStatistics.total_enrollees || 0;
-      const totalVotes = regionStatistics.total_votes || 0;
-      const participationRate = regionStatistics.participation_rate || 0;
-  
-      const results = regionStatistics.results
-        .map(
-          (candidate: any) =>
-            `<li><strong>${candidate.candidat__name}</strong>: ${candidate.total_votes} votes</li>`
-        )
-        .join("");
-  
-      const content = `
-        <div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 300px;">
-          <h3 style="margin: 0; font-size: 16px; color: #2c3e50;">
-            ${feature.properties.name_1.toUpperCase()}
-          </h3>
-          <p style="margin: 5px 0; font-size: 14px; color: #34495e;">
-            <strong>Nombre total d'enregistrés:</strong> ${totalEnrollees}<br />
-            <strong>Nombre total de votes:</strong> ${totalVotes}<br />
-            <strong>Taux de participation:</strong> ${participationRate.toFixed(2)}%
-          </p>
-          <h4 style="margin: 10px 0 5px; font-size: 14px; color: #2980b9; text-decoration: underline;">Résultats des candidats:</h4>
-          <ul style="list-style: none; padding: 0; font-size: 14px; color: #34495e;">
-            ${results}
-          </ul>
-          <p style="margin: 10px 0; font-size: 14px; color: #27ae60;">
-            <strong>Gagnant:</strong> ${winner} avec ${totalVotesWinner} votes
-          </p>
-        </div>
-      `;
-  
-      layer.bindPopup(content);
+    if (regionWinners) {
+      if (regionWinners[key]) {
+        const regionStatistics = await ApiServices.getRegionStatistics(key);
+        console.log("Region stats: ", regionStatistics);
+    
+        const winner = regionWinners[key]?.candidat_name || "N/A";
+        const totalVotesWinner = regionWinners[key]?.total_votes || 0;
+        const totalEnrollees = regionStatistics.total_enrollees || 0;
+        const totalVotes = regionStatistics.total_votes || 0;
+        const participationRate = regionStatistics.participation_rate || 0;
+    
+        const results = regionStatistics.results
+          .map(
+            (candidate: any) =>
+              `<li><strong>${candidate.candidat__name}</strong>: ${candidate.total_votes} votes</li>`
+          )
+          .join("");
+    
+        const content = `
+          <div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 300px;">
+            <h3 style="margin: 0; font-size: 16px; color: #2c3e50;">
+              ${feature.properties.name_1.toUpperCase()}
+            </h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #34495e;">
+              <strong>Nombre total d'enregistrés:</strong> ${totalEnrollees}<br />
+              <strong>Nombre total de votes:</strong> ${totalVotes}<br />
+              <strong>Taux de participation:</strong> ${participationRate.toFixed(2)}%
+            </p>
+            <h4 style="margin: 10px 0 5px; font-size: 14px; color: #2980b9; text-decoration: underline;">Résultats des candidats:</h4>
+            <ul style="list-style: none; padding: 0; font-size: 14px; color: #34495e;">
+              ${results}
+            </ul>
+            <p style="margin: 10px 0; font-size: 14px; color: #27ae60;">
+              <strong>Gagnant:</strong> ${winner} avec ${totalVotesWinner} votes
+            </p>
+          </div>
+        `;
+    
+        layer.bindPopup(content);
+      }
     }
+    
   };
   const onEachDepartmentFeature = async (feature: any, layer: any, areaType: string) => {
     console.log("Features.properties :", feature.properties);

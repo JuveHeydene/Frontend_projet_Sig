@@ -797,12 +797,6 @@ const CreateUsers = () => {
   </div>
 )}
 
-             
-      
-
-
-
-
     {/* Submit Button */}
 
 
@@ -821,4 +815,4 @@ const CreateUsers = () => {
 
 
 
-export default withAuth(CreateUsers, ['ADMINISTRATEUR','SUPERVISEUR']);
+export default withAuth(CreateUsers, ['ADMINISTRATEUR','SUPERVISEUR','ENROLEUR']);
